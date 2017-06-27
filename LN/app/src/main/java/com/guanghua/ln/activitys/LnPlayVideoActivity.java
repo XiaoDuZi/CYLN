@@ -49,6 +49,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
     private static final String TAG = "LnPlayVideoActivity";
+    //第一次提交
 
     private static final int QUICK_ADD_PROGRESS = 5;    //快进
     private static final int QUICK_CUT_PROGRESS = 6;    //快退
