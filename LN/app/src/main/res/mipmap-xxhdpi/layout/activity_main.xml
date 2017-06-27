@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@mipmap/bg"
+    tools:context="com.example.administrator.liaoningtest.MainActivity">
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"/>
+
+    <VideoView
+        android:id="@+id/smallVideoView"
+        android:layout_width="330dp"
+        android:layout_height="203dp"
+        android:layout_below="@+id/webView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="126dp"
+        android:layout_marginLeft="86dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.001"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintVertical_bias="0.0"
+        android:visibility="gone"
+        />
+
+</LinearLayout>

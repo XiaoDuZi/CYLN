@@ -1,0 +1,53 @@
+<resources>
+
+    <!--name为声明的"属性集合"名，可以随便取，但是最好是设置为跟我们的View一样的名称-->
+    <declare-styleable name="MyView">
+        <!--声明我们的属性，名称为default_size,取值类型为尺寸类型（dp,px等）-->
+        <attr name="default_size" format="dimension" />
+    </declare-styleable>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+
+    <!--绑定FocusTag-->
+    <style name="focusAndSetTag">
+        <item name="android:enabled">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:tag">tagForFocus</item>
+    </style>
+    <!-- 自定义Dialog -->
+    <style name="MyDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.4</item>
+        <item name="android:windowTitleStyle">@null</item>
+    </style>
+
+    <style name="dialog_Line">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">3dp</item>
+        <item name="android:background">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="dialog_Line_ver">
+        <item name="android:layout_width">3dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/colorPrimaryDark</item>
+    </style>
+
+
+
+
+</resources>

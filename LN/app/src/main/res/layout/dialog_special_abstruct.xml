@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parentWarp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    android:layout_gravity="center"
+    android:background="@android:color/transparent"
+    android:descendantFocusability="afterDescendants"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:gravity="center"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="420dp"
+        android:background="@color/black"
+        android:orientation="vertical">
+
+
+        <View
+            android:id="@+id/lineTop"
+            style="@style/dialog_Line" />
+
+        <TextView
+            android:id="@+id/txtTltie"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lineTop"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="25dp"
+            android:gravity="center_horizontal"
+            android:padding="10dp"
+            android:text="专辑简介"
+            android:textColor="@color/red"
+            android:textSize="30sp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/txtTltie"
+            android:layout_centerInParent="true"
+            android:paddingBottom="20dp">
+
+            <TextView
+                android:id="@+id/txtAbstruct"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="left"
+                android:lineSpacingMultiplier="1.2"
+                android:paddingBottom="10dp"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                android:textColor="@color/white"
+                android:textSize="24sp" />
+        </ScrollView>
+
+
+        <View
+            style="@style/dialog_Line"
+            android:layout_alignParentBottom="true" />
+
+    </RelativeLayout>
+
+</LinearLayout>

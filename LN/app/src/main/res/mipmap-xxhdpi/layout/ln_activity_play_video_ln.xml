@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_RootView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.administrator.liaoningtest.LNPlayVideoActivity">
+
+    <!--播放列表-->
+    <VideoView
+        android:id="@+id/videoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <ImageView
+        android:id="@+id/iv_video_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@mipmap/home_bg"
+        />
+
+    <!--暂停，快进，快退-->
+    <include
+        layout="@layout/ln_play_video_bottom"/>
+
+    <include
+        layout="@layout/ln_play_seek"/>
+    <RelativeLayout
+        android:id="@+id/rl_play_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/six_black"
+        android:visibility="gone"
+        >
+
+        <ListView
+            android:id="@+id/lv_play"
+            android:layout_width="350dp"
+            android:layout_height="350dp"
+            android:layout_centerInParent="true"
+            android:layout_gravity="left"
+            android:background="@color/fivety_black"
+            android:listSelector="@color/recentplay_color"/>
+
+    </RelativeLayout>
+
+    <include layout="@layout/ln_loding_layout"/>
+
+
+</RelativeLayout>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!-- 30%透明度 -->
+    <color name="thirdty_black">#B3000000</color>
+
+    <color name="recentplay_color">#2EA7E0</color>
+
+    <color name="gray_red">#4F4546</color>
+
+    <!-- 50%透明度 -->
+    <color name="fivety_black">#80000000</color>
+
+    <!-- 60%透明度 -->
+    <color name="six_black">#66000000</color>
+
+    <color name="transparent">#00000000</color>
+
+    <color name="black">#ff000000</color>
+
+    <color name="red">#FF00</color>
+
+    <color name="white">#FFFFFF</color>
+
+    <color name="gray_white">#848080</color>
+
+    <color name="gray_a6">#A6A6A6</color>
+</resources>
