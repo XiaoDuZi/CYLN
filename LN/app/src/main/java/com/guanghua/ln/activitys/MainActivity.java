@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+
     @BindView(R.id.webView)
     WebView mWebView;
     @BindView(R.id.smallVideoView)
