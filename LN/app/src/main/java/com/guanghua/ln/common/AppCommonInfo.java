@@ -27,7 +27,8 @@ public class AppCommonInfo {
     /**
      * 获取RecordId
      */
-    public static String RECORDID_BASEURL="http://192.168.34.145/CQTVWeb_edu/hifi/hifiData/";
+//    public static String RECORDID_BASEURL="http://192.168.34.145/CQTVWeb_edu/hifi/hifiData/";
+    public static String RECORDID_BASEURL="http://120.76.221.222/CQTVWeb_edu/hifi/hifiData/";
     //视频播放类型 1：直播；2：回看；4：点播（默认为点播）
     public static int Type = 4;
     //第三方sp的id

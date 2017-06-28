@@ -190,6 +190,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
      * 获取播放RecordID
      */
     private void getRecordID(){
+        Log.e(TAG, "onResponse: " +mTrackID+":"+mUserName);
         Retrofit mRetrofit = new Retrofit.Builder()
                 .baseUrl(AppCommonInfo.RECORDID_BASEURL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -200,7 +201,8 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 
             @Override
             public void onResponse(Call<RecordIDBean> call, Response<RecordIDBean> response) {
-                Log.e(TAG, "onResponse: 访问网络成功！");
+                Log.e(TAG, call+"onResponse: 访问网络成功！"+response);
+
                 RecordIDBean recordIDBean=new RecordIDBean();
                 recordIDBean=response.body();
                 mRecordID = recordIDBean.getRecordId();
@@ -220,7 +222,8 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     private void initDatas() {
 
         mPlatform = UserLauncherBean.getInstance().getPlatform();   //获取平台
-        mUserName = UserLauncherBean.getInstance().getUserName();   //获取用户名
+//        mUserName = UserLauncherBean.getInstance().getUserName();   //获取用户名
+        mUserName = "9950000002581730";
 
         String playListJsonString = getIntent().getStringExtra("playListJsonString");//获取播放信息
         playIndex = getIntent().getIntExtra("playIndex", 0);            //获取播放位置索引
@@ -246,6 +249,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     }
 
     private void playNext() {
+
         playIndex++;
         playVodByIndex();
     }
@@ -264,14 +268,13 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
      */
     private void getPlayUrl() {
 
-        getRecordID();  //获取添加播放记录鉴权
-
-        mTvName = playTitleList.get(playIndex);
-        mTrackID = playTrackIdList.get(playIndex);
-
+        mTvName = playTitleList.get(playIndex);  //获取视频名称
+        mTrackID = playTrackIdList.get(playIndex); //获取mTrackID
         mTvTitle.setText(mTvName);
 
-        mFileType = fileTypeList.get(playIndex);
+        getRecordID();                            //获取添加播放记录鉴权
+
+        mFileType = fileTypeList.get(playIndex);  //播放文件类型：1：视频：其他：音乐
 //        if (TextUtils.equals(mFileType, "1")) { //判断是视频还是纯音乐
 //            mIvVideoBg.setImageResource(R.mipmap.home_bg);
 //        } else { //音乐
@@ -459,6 +462,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     }
 
     private void playVodByIndex() {
+        addPlayRecord();     //添加播放记录
         if (playIndex >= playVodIdList.size()) {
             finish();
             return;
@@ -497,7 +501,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         playRecordCall.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                Log.e(TAG, "onResponse: 添加播放记录成功！"+mTvName);
+                Log.e(TAG, "onResponse: 添加播放记录成功！"+mTvName+response);
             }
 
             @Override
@@ -561,7 +565,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         mIvVideoBg.setVisibility(View.VISIBLE);
         mTvDurLeft.setText("00:00");
         mTvDurRight.setText("00:00");
-        addPlayRecord();     //播放完成，添加播放记录
+
         playNext();          //播放完成，自动播放下一个节目
     }
 

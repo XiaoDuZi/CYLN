@@ -24,6 +24,8 @@ android {
         }
 
         debug {
+            //安装多个apk
+//            applicationIdSuffix "debug"
             applicationVariants.all { variant ->
                 variant.outputs.each { output ->
                     output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace("app-debug.apk",

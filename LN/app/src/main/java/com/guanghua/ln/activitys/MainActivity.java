@@ -9,6 +9,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 
 import com.guanghua.ln.common.AppCommonInfo;
 import com.guanghua.ln.utils.GetRecordId;
@@ -33,13 +34,15 @@ public class MainActivity extends AppCompatActivity {
     WebView mWebView;
     @BindView(R.id.smallVideoView)
     LnVideoView mSmallVideoView;
+    @BindView(R.id.fl_smallVideo)
+    FrameLayout mFrameLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        new LnAIDLGetInfo(MainActivity.this);
+        new LnAIDLGetInfo(MainActivity.this);    //AIDL获取用户信息
 
         getVebView();
         getSmallVideo();
@@ -63,8 +66,10 @@ public class MainActivity extends AppCompatActivity {
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.loadUrl(AppCommonInfo.WEBURL);
 //        mWebView.addJavascriptInterface(new LnJSAndroidInteractive(MainActivity.this),"test");
-        mWebView.addJavascriptInterface(new LnJSAndroidInteractive(MainActivity.this), "android");
+        mWebView.addJavascriptInterface(new LnJSAndroidInteractive(MainActivity.this,mFrameLayout,
+                mSmallVideoView), "android");
         mWebView.requestFocus();
+//        mWebView.
         mWebView.setScrollContainer(false);
     }
 

@@ -11,16 +11,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"/>
-
-
-    <com.guanghua.ln.views.LnVideoView
-        android:id="@+id/smallVideoView"
+<!---->
+    <FrameLayout
+        android:id="@+id/fl_smallVideo"
         android:layout_width="440dp"
         android:layout_height="282dp"
         android:layout_marginLeft="116dp"
         android:layout_marginTop="178dp"
+        android:foreground="@drawable/bg_video"
         android:visibility="gone"
-        tools:ignore="RtlHardcoded"/>
+        tools:ignore="RtlHardcoded">
+        <com.guanghua.ln.views.LnVideoView
+            android:id="@+id/smallVideoView"
+            android:layout_width="440dp"
+            android:layout_height="282dp"
+            />
 
-
+    </FrameLayout>
 </RelativeLayout>
