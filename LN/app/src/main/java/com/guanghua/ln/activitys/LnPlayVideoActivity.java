@@ -121,8 +121,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     private String mTvName; //视频名称
     private String mUserName; //用户名：和keyNo相同
     private String mTrackID;  //
-    private long mComeInActivityTime;  //页面显示时时间
-    private long mOutActivityTime;      //页面销毁时时间
+    private long mStopVideoTime;      //视频停止播放时间
 
     Handler uiHandler = new Handler(new Handler.Callback() {
         @Override
@@ -165,6 +164,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         }
     });
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -180,38 +180,39 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mComeInActivityTime = System.currentTimeMillis();  //页面显示时时间
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        mBeginVideoTime = System.currentTimeMillis();  //页面显示时时间
+//        Log.e(TAG, "onResume: "+ mBeginVideoTime);
+//    }
 
     /**
      * 获取播放RecordID
      */
-    private void getRecordID(){
-        Log.e(TAG, "onResponse: " +mTrackID+":"+mUserName);
+    private void getRecordID() {
+        Log.e(TAG, "onResponse: " + mTrackID + ":" + mUserName);
         Retrofit mRetrofit = new Retrofit.Builder()
                 .baseUrl(AppCommonInfo.RECORDID_BASEURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        LnRecordIdService mLnRecordIdService= mRetrofit.create(LnRecordIdService.class);
-        Call<RecordIDBean> mRecordIDBeanCall=mLnRecordIdService.getRecordID(mTrackID,mUserName);
+        LnRecordIdService mLnRecordIdService = mRetrofit.create(LnRecordIdService.class);
+        Call<RecordIDBean> mRecordIDBeanCall = mLnRecordIdService.getRecordID(mTrackID, mUserName);
         mRecordIDBeanCall.enqueue(new Callback<RecordIDBean>() {
 
             @Override
             public void onResponse(Call<RecordIDBean> call, Response<RecordIDBean> response) {
-                Log.e(TAG, call+"onResponse: 访问网络成功！"+response);
+                Log.e(TAG, call + "onResponse: RecordID获取访问网络成功！" + response);
 
-                RecordIDBean recordIDBean=new RecordIDBean();
-                recordIDBean=response.body();
+                RecordIDBean recordIDBean = new RecordIDBean();
+                recordIDBean = response.body();
                 mRecordID = recordIDBean.getRecordId();
-                Log.e(TAG, "onResponse: "+recordIDBean.toString());
+                Log.e(TAG, "onResponse: " + recordIDBean.toString());
             }
 
             @Override
             public void onFailure(Call<RecordIDBean> call, Throwable t) {
-                Log.e(TAG, "onFailure: "+"请求网络失败");
+                Log.e(TAG, "onFailure: 获取RecordID请求网络失败"+t.toString());
             }
         });
     }
@@ -222,8 +223,12 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     private void initDatas() {
 
         mPlatform = UserLauncherBean.getInstance().getPlatform();   //获取平台
-//        mUserName = UserLauncherBean.getInstance().getUserName();   //获取用户名
-        mUserName = "9950000002581730";
+        if (UserLauncherBean.getInstance().getUserName() == null) {
+            mUserName = "9950000002581730";
+        } else {
+            mUserName = UserLauncherBean.getInstance().getUserName();   //获取用户名
+        }
+
 
         String playListJsonString = getIntent().getStringExtra("playListJsonString");//获取播放信息
         playIndex = getIntent().getIntExtra("playIndex", 0);            //获取播放位置索引
@@ -268,6 +273,8 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
      */
     private void getPlayUrl() {
 
+        Log.e(TAG, "getPlayUrl: ");
+
         mTvName = playTitleList.get(playIndex);  //获取视频名称
         mTrackID = playTrackIdList.get(playIndex); //获取mTrackID
         mTvTitle.setText(mTvName);
@@ -287,29 +294,30 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         // key值固定写为besto
         mContentId = playVodIdList.get(playIndex);    //获取视频ID
 //        mContentId = "PRO56b454431170126b36ef96fc";
-//        Log.e(TAG, "getPlayUrl:mRiddle" + mRiddle);
-//        Log.e(TAG, "getPlayUrl: " + mPlatform);
-//
-//        String url = "http://59.46.18.25:99/spplayurl/returnPlayUrl.do?" +
-//                "type=4&time=" + mTime + "&riddle=" + mRiddle + "&platform=" + mPlatform +
-//                "&spid=YPPL&contentid=" + mContentId + "&begintime=&endtime=";
-//
-//        Log.e(TAG, "getPlayUrl: URL" +mRecordID+ url);
+
+
         Retrofit retrofit = new Retrofit.Builder()                          //使用Retrofit网络框架进行访问网络
                 .baseUrl(AppCommonInfo.BASEURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         LnPlayUrlService lnPlayUrlService = retrofit.create(LnPlayUrlService.class);
+        Log.e(TAG, "getPlayUrl:mRiddle" + mRiddle);
+        Log.e(TAG, "getPlayUrl: " + mPlatform);
+
+        String url = "http://59.46.18.25:99/spplayurl/returnPlayUrl.do?" +
+                "type=4&time=" + mTime + "&riddle=" + mRiddle + "&platform=" +mPlatform+
+                "&spid="+AppCommonInfo.SpId+"&contentid=" + mContentId + "&begintime=&endtime=";
+        Log.e(TAG, "getPlayUrl: URL" +mRecordID+ url);
 
         Call<LnPlayUrlBean> call = lnPlayUrlService.getPlayUrlInfo(AppCommonInfo.Type, mTime,
-                mRiddle, AppCommonInfo.Platform, AppCommonInfo.SpId, mContentId, mBeginTime, mEndTime);
+                mRiddle,mPlatform, AppCommonInfo.SpId, mContentId, mBeginTime, mEndTime);
         call.enqueue(new Callback<LnPlayUrlBean>() {
             @Override
             public void onResponse(Call<LnPlayUrlBean> call, Response<LnPlayUrlBean> response) {
                 Toast.makeText(LnPlayVideoActivity.this, "请求成功!", Toast.LENGTH_LONG).show();
-                Log.e(TAG, "onResponse: " + "请求网络成功");
-                Log.e(TAG, "onResponse: " + mContentId + ":" + mPlatform);
-                Log.e(TAG, "onResponse: " + response.body().toString());
+                Log.e(TAG, "onResponse: 请求视频url网络成功");
+//                Log.e(TAG, "onResponse: " + mContentId + ":" + mPlatform);
+//                Log.e(TAG, "onResponse: " + response.body().toString());
                 mLnPlayUrlBean = response.body();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -322,6 +330,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 
             @Override
             public void onFailure(Call<LnPlayUrlBean> call, Throwable t) {
+                Log.e(TAG, "onFailure: 请求视频链接失败！");
                 Toast.makeText(LnPlayVideoActivity.this, "请求失败", Toast.LENGTH_SHORT).show();
             }
         });
@@ -364,7 +373,6 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     }
 
     private void beginPlayVideo(Uri playUrl) {
-
 //        getRecordID();  //获取添加播放记录鉴权
 
         Log.e(TAG, "playVideo: " + mPlatform);
@@ -453,7 +461,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         mLvPlay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                addPlayRecord(); //选择视频后添加到历史播放记录
+                mStopVideoTime = System.currentTimeMillis();
                 playIndex = i;
                 playVodByIndex();  //播放选中的 视频
                 mRlPlayList.setVisibility(View.GONE);
@@ -486,22 +494,23 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
      */
     private void addPlayRecord() {
 
-        long StayTime=mOutActivityTime-mComeInActivityTime;   //获取页面停留时间
+        long stayTime = mStopVideoTime - mTime;   //获取页面停留时间
+        Log.e(TAG, "addPlayRecord: "+stayTime+":"+ mStopVideoTime +":"+ mTime  );
 
-        Log.e(TAG, "addPlayRecord: "+mUserName+":"+mRecordID+":"+mTrackID+":"+mContentId+":"+
-        mTvName+":"+StayTime);
+        Log.e(TAG, "addPlayRecord: " + mUserName + ":" + mRecordID + ":" + mTrackID + ":" + mContentId + ":" +
+                mTvName + ":" + stayTime);
 
-        Retrofit addPlayRecordRetrofit=new Retrofit.Builder()
+        Retrofit addPlayRecordRetrofit = new Retrofit.Builder()
                 .baseUrl(AppCommonInfo.PLAY_RECORD_BASEURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        PlayRecordService playRecordService=addPlayRecordRetrofit.create(PlayRecordService.class);
-        Call<String> playRecordCall=playRecordService.getPlayRecord(mUserName,mRecordID,mTrackID,
-                mContentId,mTvName,mCurrentTime+"",StayTime+"");
+        PlayRecordService playRecordService = addPlayRecordRetrofit.create(PlayRecordService.class);
+        Call<String> playRecordCall = playRecordService.getPlayRecord(mUserName, mRecordID, mTrackID,
+                mContentId, mTvName, mCurrentTime / 1000 + "", stayTime / 1000 + "");
         playRecordCall.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                Log.e(TAG, "onResponse: 添加播放记录成功！"+mTvName+response);
+                Log.e(TAG, "onResponse: 添加播放记录成功！" + mTvName + response);
             }
 
             @Override
@@ -565,6 +574,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         mIvVideoBg.setVisibility(View.VISIBLE);
         mTvDurLeft.setText("00:00");
         mTvDurRight.setText("00:00");
+        mStopVideoTime=System.currentTimeMillis();
 
         playNext();          //播放完成，自动播放下一个节目
     }
@@ -611,9 +621,9 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //页面退出时时间
-        mOutActivityTime = System.currentTimeMillis();
-        addPlayRecord();
+        //页面退出时停止播放时间
+        mStopVideoTime = System.currentTimeMillis();
+        addPlayRecord();   //添加播放记录
         System.gc();
     }
 
