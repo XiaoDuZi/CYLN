@@ -39,8 +39,8 @@ public class LnJSAndroidInteractive {
     public LnJSAndroidInteractive(Context context, FrameLayout frameLayout, LnVideoView lnVideoView) {
         mContext = context;
         mActivity = (Activity) mContext;
-        mFrameLayout=frameLayout;
-        mLnVideoView=lnVideoView;
+        mFrameLayout = frameLayout;
+        mLnVideoView = lnVideoView;
     }
 
     //隐藏小窗口播放视频
@@ -48,24 +48,28 @@ public class LnJSAndroidInteractive {
     public void goneSmallVideo() {
         Log.e(TAG, "goneSmallVideo: ");
         mFrameLayout.setVisibility(View.GONE);
-//        mLnVideoView.setVisibility(View.GONE);
     }
 
+    //显示小窗口视频播放
     @JavascriptInterface
-    public void showSmallVideo(){
-        Log.e(TAG, "showSmallVideo: ");
-        mFrameLayout.setVisibility(View.VISIBLE);
-    }
+    public void showSmallVideo(String vodID) {
+        Log.e(TAG, "showSmallVideo: "+vodID );
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mFrameLayout.setVisibility(View.VISIBLE);
+                mLnVideoView.setVisibility(View.VISIBLE);
+                String path = "http://vf1.mtime.cn/Video/2017/02/09/flv/170209204824569974.flv";
+                mLnVideoView.setVideoPath(path);
+                mLnVideoView.start();
+            }
+        });
 
-    //开始播放小窗口视频
-    @JavascriptInterface
-    public void playSmallVideo() {
-        mLnVideoView.start();
     }
 
     //停止播放小窗口视频
     @JavascriptInterface
-    public void stopSmallVideo(){
+    public void stopSmallVideo() {
         mLnVideoView.stopPlayback();
     }
 

@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         new LnAIDLGetInfo(MainActivity.this);    //AIDL获取用户信息
 
         getVebView();
-        getSmallVideo();
+//        getSmallVideo();
     }
 
     private void getSmallVideo() {
