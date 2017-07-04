@@ -223,12 +223,11 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     private void initDatas() {
 
         mPlatform = UserLauncherBean.getInstance().getPlatform();   //获取平台
-        if (UserLauncherBean.getInstance().getUserName() == null) {
+        if (UserLauncherBean.getInstance().getUserName() == null) { //判断用户名是否为空，如果为空赋默认值，便于添加播放记录
             mUserName = "9950000002581730";
         } else {
             mUserName = UserLauncherBean.getInstance().getUserName();   //获取用户名
         }
-
 
         String playListJsonString = getIntent().getStringExtra("playListJsonString");//获取播放信息
         playIndex = getIntent().getIntExtra("playIndex", 0);            //获取播放位置索引
@@ -331,6 +330,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             @Override
             public void onFailure(Call<LnPlayUrlBean> call, Throwable t) {
                 Log.e(TAG, "onFailure: 请求视频链接失败！");
+                beginPlayVideo();
                 Toast.makeText(LnPlayVideoActivity.this, "请求失败", Toast.LENGTH_SHORT).show();
             }
         });
@@ -365,21 +365,22 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
                 }
             } else {
                 //正式地址
-                beginPlayVideo(playUrl);
+//                beginPlayVideo(playUrl);
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
     }
 
-    private void beginPlayVideo(Uri playUrl) {
+//    private void beginPlayVideo(Uri playUrl) {
+    private void beginPlayVideo() {
 //        getRecordID();  //获取添加播放记录鉴权
-
+        String path = "http://vf1.mtime.cn/Video/2017/02/09/flv/170209204824569974.flv";
         Log.e(TAG, "playVideo: " + mPlatform);
         //正式地址
-        mVideoView.setVideoPath(playUrl.toString());
+//        mVideoView.setVideoPath(playUrl.toString());
         //测试视频地址
-//        mVideoView.setVideoPath(path);
+        mVideoView.setVideoPath(path);
         mVideoView.setOnPreparedListener(this);
         mVideoView.requestFocus();
 //        if (TextUtils.equals(mFileType, "1")) { //视频播放
@@ -402,6 +403,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             mVedioPlayerPause.setVisibility(View.GONE);
             mSeekTime = (mCurrentTime + 3000);    //快进
             mVideoView.seekTo((int) mSeekTime);
+            mVideoView.start();
             mIvQuickIcon.setImageResource(R.mipmap.quick_forward);
             mLlPlayQuick.setVisibility(View.VISIBLE);
             startQuickThread(QUICK_ADD_PROGRESS);
@@ -411,12 +413,13 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 //                mRlPlayList.setVisibility(View.GONE);
 //            }
             mVideoView.pause();
-            mRlPlayList.setVisibility(View.GONE);
-            mVedioPlayerPause.setVisibility(View.GONE);
-            mSeekTime = (mCurrentTime - 3000);
+            mRlPlayList.setVisibility(View.GONE);      //隐藏视频列表
+            mVedioPlayerPause.setVisibility(View.GONE);//隐藏视频暂停图标
+            mSeekTime = (mCurrentTime - 3000);         //设置快退时间
             mVideoView.seekTo((int) mSeekTime);
-            mIvQuickIcon.setImageResource(R.mipmap.quick_back);
-            mLlPlayQuick.setVisibility(View.VISIBLE);
+            mVideoView.start();
+            mIvQuickIcon.setImageResource(R.mipmap.quick_back); //设置快退图标
+            mLlPlayQuick.setVisibility(View.VISIBLE);   //显示快进快退布局
             startQuickThread(QUICK_CUT_PROGRESS);
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
