@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -163,6 +164,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             return false;
         }
     });
+    private long mInActivityTime;
 
 
     @Override
@@ -170,6 +172,8 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ln_activity_play_video_ln);
         ButterKnife.bind(this);
+
+        mInActivityTime = System.currentTimeMillis();
 //        getRecordID();//
         initDatas();   //获取播放信息
         getPlayUrl();
@@ -179,13 +183,6 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         mVideoView.setOnCompletionListener(this);
 
     }
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        mBeginVideoTime = System.currentTimeMillis();  //页面显示时时间
-//        Log.e(TAG, "onResume: "+ mBeginVideoTime);
-//    }
 
     /**
      * 获取播放RecordID
@@ -206,8 +203,13 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 
                 RecordIDBean recordIDBean = new RecordIDBean();
                 recordIDBean = response.body();
-                mRecordID = recordIDBean.getRecordId();
-                Log.e(TAG, "onResponse: " + recordIDBean.toString());
+                try{
+                    mRecordID = recordIDBean.getRecordId();
+                    Log.e(TAG, "onResponse: " + recordIDBean.toString());
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+
             }
 
             @Override
@@ -241,8 +243,9 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         }
         for (int i = 0; i < playItemList.size(); i++) {
             LnBeanPlayItem playItem = playItemList.get(i);
+            Log.e(TAG, "initDatas: "+playItem+":"+playItem.getName());
             playTitleList.add(playItem.getName());
-            playVodIdList.add(playItem.getVodId());
+            playVodIdList.add(playItem.getVodId().trim());
             fileTypeList.add(playItem.getFileType());
             pointList.add(playItem.getInitPoint());
             playTrackIdList.add(playItem.getTrackId() + "");
@@ -253,8 +256,8 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     }
 
     private void playNext() {
-
         playIndex++;
+        addPlayRecord();     //添加播放记录
         playVodByIndex();
     }
 
@@ -278,8 +281,6 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         mTrackID = playTrackIdList.get(playIndex); //获取mTrackID
         mTvTitle.setText(mTvName);
 
-        getRecordID();                            //获取添加播放记录鉴权
-
         mFileType = fileTypeList.get(playIndex);  //播放文件类型：1：视频：其他：音乐
 //        if (TextUtils.equals(mFileType, "1")) { //判断是视频还是纯音乐
 //            mIvVideoBg.setImageResource(R.mipmap.home_bg);
@@ -292,8 +293,6 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 
         // key值固定写为besto
         mContentId = playVodIdList.get(playIndex);    //获取视频ID
-//        mContentId = "PRO56b454431170126b36ef96fc";
-
 
         Retrofit retrofit = new Retrofit.Builder()                          //使用Retrofit网络框架进行访问网络
                 .baseUrl(AppCommonInfo.BASEURL)
@@ -313,15 +312,13 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         call.enqueue(new Callback<LnPlayUrlBean>() {
             @Override
             public void onResponse(Call<LnPlayUrlBean> call, Response<LnPlayUrlBean> response) {
-                Toast.makeText(LnPlayVideoActivity.this, "请求成功!", Toast.LENGTH_LONG).show();
                 Log.e(TAG, "onResponse: 请求视频url网络成功");
-//                Log.e(TAG, "onResponse: " + mContentId + ":" + mPlatform);
-//                Log.e(TAG, "onResponse: " + response.body().toString());
                 mLnPlayUrlBean = response.body();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, "run: " + mLnPlayUrlBean.getPlayUrl());
+                        if (mLnPlayUrlBean==null)
+                            return;
                         playVideo(mLnPlayUrlBean);       //播放视频
                     }
                 });
@@ -330,7 +327,6 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             @Override
             public void onFailure(Call<LnPlayUrlBean> call, Throwable t) {
                 Log.e(TAG, "onFailure: 请求视频链接失败！");
-                beginPlayVideo();
                 Toast.makeText(LnPlayVideoActivity.this, "请求失败", Toast.LENGTH_SHORT).show();
             }
         });
@@ -365,22 +361,19 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
                 }
             } else {
                 //正式地址
-//                beginPlayVideo(playUrl);
+                beginPlayVideo(playUrl);
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
     }
 
-//    private void beginPlayVideo(Uri playUrl) {
-    private void beginPlayVideo() {
-//        getRecordID();  //获取添加播放记录鉴权
-        String path = "http://vf1.mtime.cn/Video/2017/02/09/flv/170209204824569974.flv";
+    private void beginPlayVideo(Uri playUrl) {
+        getRecordID();                            //获取添加播放记录鉴权
         Log.e(TAG, "playVideo: " + mPlatform);
         //正式地址
-//        mVideoView.setVideoPath(playUrl.toString());
-        //测试视频地址
-        mVideoView.setVideoPath(path);
+        mVideoView.setVideoPath(playUrl.toString());
+
         mVideoView.setOnPreparedListener(this);
         mVideoView.requestFocus();
 //        if (TextUtils.equals(mFileType, "1")) { //视频播放
@@ -473,7 +466,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     }
 
     private void playVodByIndex() {
-        addPlayRecord();     //添加播放记录
+
         if (playIndex >= playVodIdList.size()) {
             finish();
             return;
@@ -497,7 +490,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
      */
     private void addPlayRecord() {
 
-        long stayTime = mStopVideoTime - mTime;   //获取页面停留时间
+        long stayTime = mStopVideoTime - mInActivityTime;   //获取页面停留时间
         Log.e(TAG, "addPlayRecord: "+stayTime+":"+ mStopVideoTime +":"+ mTime  );
 
         Log.e(TAG, "addPlayRecord: " + mUserName + ":" + mRecordID + ":" + mTrackID + ":" + mContentId + ":" +
