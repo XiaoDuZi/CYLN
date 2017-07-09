@@ -490,11 +490,11 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
      */
     private void addPlayRecord() {
 
-        long stayTime = mStopVideoTime - mInActivityTime;   //获取页面停留时间
-        Log.e(TAG, "addPlayRecord: "+stayTime+":"+ mStopVideoTime +":"+ mTime  );
-
-        Log.e(TAG, "addPlayRecord: " + mUserName + ":" + mRecordID + ":" + mTrackID + ":" + mContentId + ":" +
-                mTvName + ":" + stayTime);
+        final long stayTime = (long) Math.ceil(mStopVideoTime - mInActivityTime);   //获取页面停留时间
+//        Log.e(TAG, "addPlayRecord: "+mCurrentTime+":::"+stayTime+":"+ mStopVideoTime +":"+mInActivityTime+":"+stayTime);
+//
+//        Log.e(TAG, "addPlayRecord: " + mUserName + ":" + mRecordID + ":" + mTrackID + ":" + mContentId + ":" +
+//                mTvName + ":" + stayTime);
 
         Retrofit addPlayRecordRetrofit = new Retrofit.Builder()
                 .baseUrl(AppCommonInfo.PLAY_RECORD_BASEURL)
@@ -502,11 +502,12 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
                 .build();
         PlayRecordService playRecordService = addPlayRecordRetrofit.create(PlayRecordService.class);
         Call<String> playRecordCall = playRecordService.getPlayRecord(mUserName, mRecordID, mTrackID,
-                mContentId, mTvName, mCurrentTime / 1000 + "", stayTime / 1000 + "");
+                mContentId, mTvName, mCurrentTime / 1000 + "", stayTime/1000+"");
         playRecordCall.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 Log.e(TAG, "onResponse: 添加播放记录成功！" + mTvName + response);
+                Log.e(TAG, "onResponse: "+mCurrentTime/1000+":"+stayTime/1000);
             }
 
             @Override
@@ -617,10 +618,17 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     @Override
     protected void onDestroy() {
         super.onDestroy();
+//        /**
+//         * 解决视频播放时，播放时长大于页面停留时长
+//         * mVideoView.pause();
+//         * mVideoView.stopPlayback();
+//         */
+//        mVideoView.pause();
+//        mVideoView.stopPlayback();
         //页面退出时停止播放时间
         mStopVideoTime = System.currentTimeMillis();
         addPlayRecord();   //添加播放记录
-        System.gc();
+        System.gc();    //退出回收系统垃圾
     }
 
 }

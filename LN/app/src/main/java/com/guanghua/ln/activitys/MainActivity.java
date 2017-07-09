@@ -1,29 +1,34 @@
 package com.guanghua.ln.activitys;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.webkit.JavascriptInterface;
+import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import com.guanghua.ln.bean.UserLauncherBean;
 import com.guanghua.ln.common.AppCommonInfo;
-import com.guanghua.ln.utils.GetRecordId;
 import com.guanghua.ln.utils.LnAIDLGetInfo;
 import com.guanghua.ln.utils.LnJSAndroidInteractive;
-import com.guanghua.ln.utils.VideoViewOutlineProvider;
 import com.guanghua.ln.views.LnVideoView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static android.R.attr.radius;
 import static com.guanghua.ln.utils.LnJSAndroidInteractive.isKeyBackClose;
 import static com.guanghua.ln.utils.LnJSAndroidInteractive.jsCloseLayerMethod;
+import static com.guanghua.ln.utils.LnJSAndroidInteractive.mHideSmallVideo;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -37,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     LnVideoView mSmallVideoView;
     @BindView(R.id.fl_smallVideo)
     FrameLayout mFrameLayout;
+    private WebSettings mWebSettings;
+    private boolean mBeginJs=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,31 +53,20 @@ public class MainActivity extends AppCompatActivity {
         new LnAIDLGetInfo(MainActivity.this);    //AIDL获取用户信息
 
         getVebView();
-//        getSmallVideo();
-    }
-
-    private void getSmallVideo() {
-        String path = "http://vf1.mtime.cn/Video/2017/02/09/flv/170209204824569974.flv";
-
-        mSmallVideoView.setVideoPath(path);
-//        mVideoView.requestFocus();
-        mSmallVideoView.start();
     }
 
     private void getVebView() {
-        WebSettings webSettings = mWebView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
+        mWebSettings = mWebView.getSettings();
+        mWebSettings.setJavaScriptEnabled(true);
         //不加载缓存
-        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         mWebView.setWebChromeClient(new WebChromeClient());
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.loadUrl(AppCommonInfo.WEBURL);
-//        mWebView.addJavascriptInterface(new LnJSAndroidInteractive(MainActivity.this),"test");
-        mWebView.addJavascriptInterface(new LnJSAndroidInteractive(MainActivity.this,mFrameLayout,
-                mSmallVideoView), "android");
+        mWebView.addJavascriptInterface(new LnJSAndroidInteractive(MainActivity.this, mFrameLayout,
+                mSmallVideoView, mWebView,mWebSettings), "android");
         mWebView.requestFocus();
-//        mWebView.
         mWebView.setScrollContainer(false);
     }
 
@@ -108,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+
         Log.e(TAG, "onKeyDown: " + keyCode);
         //机顶盒的返回键监听是KEYCODE_ESCAPE
         if (keyCode == KeyEvent.KEYCODE_ESCAPE || keyCode == KeyEvent.KEYCODE_BACK) {
@@ -133,4 +130,5 @@ public class MainActivity extends AppCompatActivity {
         super.finish();
         mWebView.clearCache(true);
     }
+
 }

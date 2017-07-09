@@ -4,23 +4,46 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.guanghua.ln.activitys.LnPlayVideoActivity;
 import com.guanghua.ln.activitys.R;
+import com.guanghua.ln.bean.LnPlayUrlBean;
+import com.guanghua.ln.bean.SmallVideoItemBean;
 import com.guanghua.ln.bean.UserLauncherBean;
+import com.guanghua.ln.common.AppCommonInfo;
+import com.guanghua.ln.interfaces.LnPlayUrlService;
 import com.guanghua.ln.interfaces.MyDialogEnterListener;
 import com.guanghua.ln.views.LnVideoView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /**
  * Created by Administrator on 2017/5/21 0021.
  */
 
-public class LnJSAndroidInteractive {
+public class LnJSAndroidInteractive implements MediaPlayer.OnPreparedListener {
 
     private static final String TAG = "LnJSAndroidInteractive";
 
@@ -34,9 +57,13 @@ public class LnJSAndroidInteractive {
 
     public static final int PLAY_VIDEO = 1000;
 
-    HiFiDialogTools mHiFiDialogTools = new HiFiDialogTools();
+    private String mPlatform;
 
-    public LnJSAndroidInteractive(Context context, FrameLayout frameLayout, LnVideoView lnVideoView) {
+    HiFiDialogTools mHiFiDialogTools = new HiFiDialogTools();
+    private List<String> mVodid;
+    public static boolean mHideSmallVideo;
+
+    public LnJSAndroidInteractive(Context context, FrameLayout frameLayout,LnVideoView lnVideoView) {
         mContext = context;
         mActivity = (Activity) mContext;
         mFrameLayout = frameLayout;
@@ -46,26 +73,110 @@ public class LnJSAndroidInteractive {
     //隐藏小窗口播放视频
     @JavascriptInterface
     public void goneSmallVideo() {
-        Log.e(TAG, "goneSmallVideo: ");
-        mFrameLayout.setVisibility(View.GONE);
-    }
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mFrameLayout.setVisibility(View.GONE);
+                mLnVideoView.setVisibility(View.GONE);
+            }
+        });
 
+    }
     //显示小窗口视频播放
     @JavascriptInterface
     public void showSmallVideo(String vodID) {
-        Log.e(TAG, "showSmallVideo: "+vodID );
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mFrameLayout.setVisibility(View.VISIBLE);
                 mLnVideoView.setVisibility(View.VISIBLE);
-                String path = "http://vf1.mtime.cn/Video/2017/02/09/flv/170209204824569974.flv";
-                mLnVideoView.setVideoPath(path);
-                mLnVideoView.start();
             }
         });
-
     }
+
+
+//    private void getPlayUrl() {
+//        Retrofit retrofit = new Retrofit.Builder()        //使用Retrofit网络框架进行访问网络
+//                .baseUrl(AppCommonInfo.BASEURL)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//        LnPlayUrlService lnPlayUrlService = retrofit.create(LnPlayUrlService.class);
+//
+//        Call<LnPlayUrlBean> call = lnPlayUrlService.getPlayUrlInfo(AppCommonInfo.Type,
+//                AppCommonInfo.mTime,AppCommonInfo.mRiddle,AppCommonInfo.Platform,
+//                AppCommonInfo.SpId,mVodid.get(0), "","");
+//        call.enqueue(new Callback<LnPlayUrlBean>() {
+//            @Override
+//            public void onResponse(Call<LnPlayUrlBean> call, Response<LnPlayUrlBean> response) {
+//                final LnPlayUrlBean mLnPlayUrlBean = response.body();
+//                Log.e(TAG, "onResponse: "+response.toString());
+//                mActivity.runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        playVideo(mLnPlayUrlBean);       //播放视频
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onFailure(Call<LnPlayUrlBean> call, Throwable t) {
+//                Log.e(TAG, "onFailure: 请求视频链接失败！");
+//            }
+//        });
+//    }
+//
+//    private void playVideo(LnPlayUrlBean lnPlayUrlBean) {
+//        if (lnPlayUrlBean.getPlayUrl() == null)
+//            return;
+//        try {
+//            Uri playUrl = Uri.parse(lnPlayUrlBean.getPlayUrl());
+//            if (playUrl.toString().equals("该内容无播放地址!")) {
+//                switch (mPlatform) {
+//                    case "ZX":
+//                        mPlatform = "GD";
+//                        getPlayUrl();
+//                        break;
+//                    case "GD":
+//                        mPlatform = "HW";
+//                        getPlayUrl();
+//                        //正式地址
+//                        break;
+//                    case "HW":
+//                        mPlatform = "ZX";
+//                        getPlayUrl();
+//                        break;
+//                }
+//            } else {
+//                //正式地址
+//                beginPlayVideo(playUrl);
+//            }
+//        } catch (NullPointerException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    private void beginPlayVideo(Uri playUrl) {
+//        Log.e(TAG, "playVideo: " + mPlatform);
+//        //正式地址
+//        mLnVideoView.setVideoPath(playUrl.toString());
+//
+//        mLnVideoView.setOnPreparedListener(this);
+//        mLnVideoView.requestFocus();
+////        if (TextUtils.equals(mFileType, "1")) { //视频播放
+////            mIvVideoBg.setVisibility(View.GONE);
+////        }
+//    }
+//
+//    private void getVodId(String vodID) {
+//        List<SmallVideoItemBean> smallVideoItemBeanList=new ArrayList<>();
+//        Gson gson=new Gson();
+//        smallVideoItemBeanList= (List<SmallVideoItemBean>) gson.fromJson(vodID,
+//                new TypeToken<List<SmallVideoItemBean>>(){}.getType());
+//        mVodid = new ArrayList<>();
+//        for (int i=0;i<smallVideoItemBeanList.size();i++){
+//            mVodid.add(smallVideoItemBeanList.get(i).getVodId());
+//        }
+//    }
 
     //停止播放小窗口视频
     @JavascriptInterface
@@ -127,5 +238,12 @@ public class LnJSAndroidInteractive {
     @JavascriptInterface
     public void jump() {
         mContext.startActivity(new Intent(mContext, LnPlayVideoActivity.class));
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        if (mp.isPlaying())
+            mp.reset();
+        mp.start();
     }
 }
