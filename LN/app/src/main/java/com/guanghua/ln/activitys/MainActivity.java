@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.loadUrl(AppCommonInfo.WEBURL);
         mWebView.addJavascriptInterface(new LnJSAndroidInteractive(MainActivity.this, mFrameLayout,
-                mSmallVideoView, mWebView,mWebSettings), "android");
+                mSmallVideoView), "android");
         mWebView.requestFocus();
         mWebView.setScrollContainer(false);
     }
