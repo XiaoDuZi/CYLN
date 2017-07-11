@@ -3,21 +3,14 @@ package com.guanghua.ln.activitys;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
-import android.webkit.JavascriptInterface;
-import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
-import com.guanghua.ln.bean.UserLauncherBean;
 import com.guanghua.ln.common.AppCommonInfo;
 import com.guanghua.ln.interfaces.MyDialogEnterListener;
 import com.guanghua.ln.utils.HiFiDialogTools;
@@ -27,10 +20,6 @@ import com.guanghua.ln.views.LnVideoView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.guanghua.ln.utils.LnJSAndroidInteractive.isKeyBackClose;
-import static com.guanghua.ln.utils.LnJSAndroidInteractive.jsCloseLayerMethod;
-import static com.guanghua.ln.utils.LnJSAndroidInteractive.mHideSmallVideo;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -45,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.fl_smallVideo)
     FrameLayout mFrameLayout;
     private WebSettings mWebSettings;
-    private boolean mBeginJs=false;
+    private boolean mBeginJs = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,16 +95,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        String currentURL=mWebView.getOriginalUrl();   //获取当前web页面的URL
+
+        String currentURL = mWebView.getOriginalUrl();   //获取当前web页面的URL
+
         //对当前页面进行判断，如果是首页，点击返回弹出退出提示
-        if ((currentURL!=null)&&(currentURL.equals(AppCommonInfo.WEBURL))){
+        if ((currentURL != null) && (currentURL.equals(AppCommonInfo.WEBURL))) {
             mHiFiDialogTools.showLeftRightTip(MainActivity.this, "温馨提示", "确认退出" +
                             getString(R.string.app_name) + "？", "再玩一会", "退出",
                     new MyDialogEnterListener() {
                         @Override
                         public void onClickEnter(Dialog dialog, Object object) {
                             if ((int) object == 1) {
-                               finish();
+                                finish();
                             }
                         }
                     });
@@ -124,14 +115,21 @@ public class MainActivity extends AppCompatActivity {
 
         //机顶盒的返回键监听是KEYCODE_ESCAPE
         if (keyCode == KeyEvent.KEYCODE_ESCAPE || keyCode == KeyEvent.KEYCODE_BACK) {
-            if (jsCloseLayerMethod != null && !jsCloseLayerMethod.equals("0")) {
-                String jsString = "javascript:" + jsCloseLayerMethod;
-                mWebView.loadUrl(jsString);
-                return true;
-            } else if (isKeyBackClose) {
-                finish();
-            } else if (mWebView.canGoBack()) {
-                mWebView.goBack(); // goBack()表示返回WebView的上一页面
+//            if (jsCloseLayerMethod != null && !jsCloseLayerMethod.equals("0")) {
+//                String jsString = "javascript:" + jsCloseLayerMethod;
+//                Log.e(TAG, "onKeyDown: "+jsString);
+//                mWebView.loadUrl(jsString);
+//                return true;
+//            } else if (isKeyBackClose) {
+//                finish();
+//            } else
+            if (mWebView.canGoBack()) {
+                int intIndex = currentURL.indexOf(AppCommonInfo.INDEX_HTML);
+                if (intIndex == -1) {
+                    mWebView.goBack(); // goBack()表示返回WebView的上一页面
+                } else {
+                    mWebView.loadUrl(AppCommonInfo.INDEX_URL + currentURL.substring(currentURL.length() - 1));
+                }
                 return true;
             } else {
                 finish();

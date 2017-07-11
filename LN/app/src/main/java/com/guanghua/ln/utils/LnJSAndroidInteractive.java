@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.guanghua.ln.activitys.LnPlayVideoActivity;
 import com.guanghua.ln.activitys.R;
+import com.guanghua.ln.activitys.VodIDVideoActivity;
 import com.guanghua.ln.bean.LnPlayUrlBean;
 import com.guanghua.ln.bean.SmallVideoItemBean;
 import com.guanghua.ln.bean.UserLauncherBean;
@@ -65,7 +66,10 @@ public class LnJSAndroidInteractive implements MediaPlayer.OnPreparedListener, M
     private String mPlayVodID;
     private int i=0;
 
-    public LnJSAndroidInteractive(Context context, FrameLayout frameLayout,LnVideoView lnVideoView) {
+    public LnJSAndroidInteractive() {
+    }
+
+    public LnJSAndroidInteractive(Context context, FrameLayout frameLayout, LnVideoView lnVideoView) {
         mContext = context;
         mActivity = (Activity) mContext;
         mFrameLayout = frameLayout;
@@ -210,6 +214,7 @@ public class LnJSAndroidInteractive implements MediaPlayer.OnPreparedListener, M
     //关闭弹层
     @JavascriptInterface
     public void onClickBack(final String strCallback) {
+        Log.e(TAG, "onClickBack: ");
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -243,21 +248,31 @@ public class LnJSAndroidInteractive implements MediaPlayer.OnPreparedListener, M
         mActivity.startActivity(intent);
     }
 
-    //退出app
     @JavascriptInterface
-    public void exitApp() {
-        Log.e(TAG, "exitApp: ");
-        mHiFiDialogTools.showLeftRightTip(mContext, "温馨提示", "确认退出" +
-                        mContext.getString(R.string.app_name) + "？", "再玩一会", "退出",
-                new MyDialogEnterListener() {
-                    @Override
-                    public void onClickEnter(Dialog dialog, Object object) {
-                        if ((int) object == 1) {
-                            mActivity.finish();
-                        }
-                    }
-                });
+    public void startVodIDVideo(String playListJsonString) {
+        Intent intent = new Intent(mContext,VodIDVideoActivity.class);
+        intent.putExtra("startVodIDVideo", playListJsonString);
+        Log.e(TAG, "startPlayVideo:" + playListJsonString);
+//        mActivity.startActivityForResult(intent, PLAY_VIDEO);
+        mActivity.startActivity(intent);
     }
+
+
+//    //退出app
+//    @JavascriptInterface
+//    public void exitApp() {
+//        Log.e(TAG, "exitApp: ");
+//        mHiFiDialogTools.showLeftRightTip(mContext, "温馨提示", "确认退出" +
+//                        mContext.getString(R.string.app_name) + "？", "再玩一会", "退出",
+//                new MyDialogEnterListener() {
+//                    @Override
+//                    public void onClickEnter(Dialog dialog, Object object) {
+//                        if ((int) object == 1) {
+//                            mActivity.finish();
+//                        }
+//                    }
+//                });
+//    }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
