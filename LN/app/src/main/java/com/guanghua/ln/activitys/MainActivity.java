@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -97,21 +98,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         String currentURL = mWebView.getOriginalUrl();   //获取当前web页面的URL
-
-        //对当前页面进行判断，如果是首页，点击返回弹出退出提示
-        if ((currentURL != null) && (currentURL.equals(AppCommonInfo.WEBURL))) {
-            mHiFiDialogTools.showLeftRightTip(MainActivity.this, "温馨提示", "确认退出" +
-                            getString(R.string.app_name) + "？", "再玩一会", "退出",
-                    new MyDialogEnterListener() {
-                        @Override
-                        public void onClickEnter(Dialog dialog, Object object) {
-                            if ((int) object == 1) {
-                                finish();
-                            }
-                        }
-                    });
-            return true;
-        }
+        Log.e(TAG, "onKeyDown: "+currentURL);
 
         //机顶盒的返回键监听是KEYCODE_ESCAPE
         if (keyCode == KeyEvent.KEYCODE_ESCAPE || keyCode == KeyEvent.KEYCODE_BACK) {
@@ -123,7 +110,21 @@ public class MainActivity extends AppCompatActivity {
 //            } else if (isKeyBackClose) {
 //                finish();
 //            } else
-            if (mWebView.canGoBack()) {
+            //对当前页面进行判断，如果是首页，点击返回弹出退出提示
+            if ((currentURL.equals(AppCommonInfo.WEBURL))||
+                    (currentURL.equals(AppCommonInfo.INDEX_URL+currentURL.substring(currentURL.length() - 1)))) {
+                mHiFiDialogTools.showLeftRightTip(MainActivity.this, "温馨提示", "确认退出" +
+                                getString(R.string.app_name) + "？", "再玩一会", "退出",
+                        new MyDialogEnterListener() {
+                            @Override
+                            public void onClickEnter(Dialog dialog, Object object) {
+                                if ((int) object == 1) {
+                                    finish();
+                                }
+                            }
+                        });
+                return true;
+            } else if (mWebView.canGoBack()) {
                 int intIndex = currentURL.indexOf(AppCommonInfo.INDEX_HTML);
                 if (intIndex == -1) {
                     mWebView.goBack(); // goBack()表示返回WebView的上一页面
