@@ -22,6 +22,8 @@ import com.guanghua.ln.views.LnVideoView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.guanghua.ln.activitys.R.color.transparent;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,12 +55,16 @@ public class MainActivity extends AppCompatActivity {
         //不加载缓存
         mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
+        mWebView.setBackgroundColor(getResources().getColor(R.color.transparent));
+        mWebView.setBackgroundResource(R.drawable.home_bg);
         mWebView.setWebChromeClient(new WebChromeClient());
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.loadUrl(AppCommonInfo.WEBURL);
         mWebView.addJavascriptInterface(new LnJSAndroidInteractive(MainActivity.this, mFrameLayout,
                 mSmallVideoView), "android");
         mWebView.requestFocus();
+        mWebView.clearCache(true);
+        mWebView.clearHistory();
         mWebView.setScrollContainer(false);
     }
 
@@ -97,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-        String currentURL = mWebView.getOriginalUrl();   //获取当前web页面的URL
+//        String currentURL = mWebView.getOriginalUrl();   //获取当前web页面的URL
+        String currentURL =mWebView.getUrl();  //获取当前web页面的URL
         Log.e(TAG, "onKeyDown: "+currentURL);
 
         //机顶盒的返回键监听是KEYCODE_ESCAPE

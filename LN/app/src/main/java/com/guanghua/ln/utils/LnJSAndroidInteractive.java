@@ -249,7 +249,8 @@ public class LnJSAndroidInteractive implements MediaPlayer.OnPreparedListener, M
     }
 
     @JavascriptInterface
-    public void startVodIDVideo(String playListJsonString) {
+    public void startTradkIDVideo(String playListJsonString) {
+        Log.e(TAG, "startTradkIDVideo: "+playListJsonString);
         Intent intent = new Intent(mContext,VodIDVideoActivity.class);
         intent.putExtra("startVodIDVideo", playListJsonString);
         Log.e(TAG, "startPlayVideo:" + playListJsonString);

@@ -31,6 +31,7 @@ import com.guanghua.ln.common.AppCommonInfo;
 import com.guanghua.ln.interfaces.LnPlayUrlService;
 import com.guanghua.ln.interfaces.LnRecordIdService;
 import com.guanghua.ln.interfaces.PlayRecordService;
+import com.guanghua.ln.interfaces.TrackIDBean;
 import com.guanghua.ln.utils.LnMD5Utils;
 import com.guanghua.ln.utils.LnUtils;
 import com.guanghua.ln.views.LnVideoView;
@@ -113,9 +114,9 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
     private int playIndex = 0;           //播放索引
 
     private ArrayList<String> playTitleList = new ArrayList();
-    private ArrayList<String> playVodIdList = new ArrayList();
+//    private ArrayList<String> playVodIdList = new ArrayList();
     private ArrayList<String> playTrackIdList = new ArrayList();
-    private ArrayList<String> fileTypeList = new ArrayList();
+//    private ArrayList<String> fileTypeList = new ArrayList();
     private ArrayList<Integer> pointList = new ArrayList();
     private String mFileType;
     private LnPlayUrlBean mLnPlayUrlBean;
@@ -177,7 +178,6 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
 
         mInActivityTime = System.currentTimeMillis();
         initDatas();   //获取播放信息
-        getPlayUrl();
 
         showControl();
 
@@ -188,6 +188,7 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
      * 获取播放RecordID
      */
     private void getRecordID() {
+        mTrackID=playTrackIdList.get(0);
         Log.e(TAG, "onResponse: " + mTrackID + ":" + mUserName);
         Retrofit mRetrofit = new Retrofit.Builder()
                 .baseUrl(AppCommonInfo.RECORDID_BASEURL)
@@ -205,11 +206,11 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
                 recordIDBean = response.body();
                 try{
                     mRecordID = recordIDBean.getRecordId();
-                    Log.e(TAG, "onResponse: " + recordIDBean.toString());
+                    mContentId=recordIDBean.getData().getVodId();
+                    getPlayUrl();   //获取视频播放URL
                 }catch (NullPointerException e){
                     e.printStackTrace();
                 }
-
             }
 
             @Override
@@ -231,35 +232,36 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
             mUserName = UserLauncherBean.getInstance().getUserName();   //获取用户名
         }
 
-        String playListJsonString = getIntent().getStringExtra("playListJsonString");//获取播放信息
-        playIndex = getIntent().getIntExtra("playIndex", 0);            //获取播放位置索引
-        List<LnBeanPlayItem> playItemList = new ArrayList<>();
+        String playListJsonString = getIntent().getStringExtra("startVodIDVideo");//获取播放信息
+        Log.e(TAG, "initDatas: "+playListJsonString);
+        List<TrackIDBean> playItemList = new ArrayList<>();
         Gson gson = new Gson();
-        playItemList = gson.fromJson(playListJsonString, new TypeToken<List<LnBeanPlayItem>>() {
+        playItemList = gson.fromJson(playListJsonString, new TypeToken<List<TrackIDBean>>() {
         }.getType());
 
         if (playItemList.isEmpty()) {
             return;
         }
         for (int i = 0; i < playItemList.size(); i++) {
-            LnBeanPlayItem playItem = playItemList.get(i);
+            TrackIDBean playItem = playItemList.get(i);
             Log.e(TAG, "initDatas: "+playItem+":"+playItem.getName());
             playTitleList.add(playItem.getName());
-            playVodIdList.add(playItem.getVodId().trim());
-            fileTypeList.add(playItem.getFileType());
-            pointList.add(playItem.getInitPoint());
+//            playVodIdList.add(playItem.getVodId().trim());
+//            fileTypeList.add(playItem.getFileType());
+//            pointList.add(playItem.getInitPoint());
             playTrackIdList.add(playItem.getTrackId() + "");
         }
-        if (playIndex >= playItemList.size()) {
-            playIndex = 0;
-        }
+        getRecordID();
+//        if (playIndex >= playItemList.size()) {
+//            playIndex = 0;
+//        }
     }
 
-    private void playNext() {
-        playIndex++;
-        addPlayRecord();     //添加播放记录
-        playVodByIndex();
-    }
+//    private void playNext() {
+//        playIndex++;
+//        addPlayRecord();     //添加播放记录
+//        playVodByIndex();
+//    }
 
     /**
      * 播放暂停，快进控制
@@ -274,25 +276,14 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
      * 获取播放Url
      */
     private void getPlayUrl() {
-
-        Log.e(TAG, "getPlayUrl: ");
+        Log.e(TAG, "getPlayUrl: "+mContentId);
 
         mTvName = playTitleList.get(playIndex);  //获取视频名称
         mTrackID = playTrackIdList.get(playIndex); //获取mTrackID
         mTvTitle.setText(mTvName);
 
-        mFileType = fileTypeList.get(playIndex);  //播放文件类型：1：视频：其他：音乐
-//        if (TextUtils.equals(mFileType, "1")) { //判断是视频还是纯音乐
-//            mIvVideoBg.setImageResource(R.mipmap.home_bg);
-//        } else { //音乐
-//            mIvVideoBg.setImageResource(R.mipmap.play_music_bg);
-//            mVideoView.setVisibility(View.INVISIBLE);
-//        }
         mTime = System.currentTimeMillis();                                     //获取时间戳
         mRiddle = LnMD5Utils.MD5(System.currentTimeMillis() + "besto");           //加密串加密串（时间戳+key的md5值），
-
-        // key值固定写为besto
-        mContentId = playVodIdList.get(playIndex);    //获取视频ID
 
         Retrofit retrofit = new Retrofit.Builder()                          //使用Retrofit网络框架进行访问网络
                 .baseUrl(AppCommonInfo.BASEURL)
@@ -369,7 +360,6 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
     }
 
     private void beginPlayVideo(Uri playUrl) {
-        getRecordID();                            //获取添加播放记录鉴权
         Log.e(TAG, "playVideo: " + mPlatform);
         //正式地址
         mVideoView.setVideoPath(playUrl.toString());
@@ -434,7 +424,7 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
                 || keyCode == KeyEvent.KEYCODE_MENU) {
             Log.e(TAG, "onKeyUp: ");
             if (mRlPlayList.getVisibility() == View.GONE) {
-                showPlayList();
+//                showPlayList();
                 Log.e(TAG, "onKeyUp: **********");
                 return true;
             }
@@ -445,45 +435,41 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
         return super.onKeyUp(keyCode, event);
     }
 
-    /**
-     * 显示播放列表
-     */
-    private void showPlayList() {
-        Log.e(TAG, "showPlayList: ");
-        mRlPlayList.setVisibility(View.VISIBLE);
+//    /**
+//     * 显示播放列表
+//     */
+//    private void showPlayList() {
+//        Log.e(TAG, "showPlayList: ");
+//        mRlPlayList.setVisibility(View.VISIBLE);
+//
+//        mLvPlay.setAdapter(new ArrayAdapter<String>(this, R.layout.ln_item_play_list, playTitleList));
+//
+//        mLvPlay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                mStopVideoTime = System.currentTimeMillis();
+//                playIndex = i;
+//                playVodByIndex();  //播放选中的 视频
+//                mRlPlayList.setVisibility(View.GONE);
+//            }
+//        });
+//    }
 
-        mLvPlay.setAdapter(new ArrayAdapter<String>(this, R.layout.ln_item_play_list, playTitleList));
-
-        mLvPlay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mStopVideoTime = System.currentTimeMillis();
-                playIndex = i;
-                playVodByIndex();  //播放选中的 视频
-                mRlPlayList.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    private void playVodByIndex() {
-
-        if (playIndex >= playVodIdList.size()) {
-            finish();
-            return;
-        }
-        isPlaying = false;
-//        mCurrentTime = 0;
-//        mVideoPlayerProgress.setProgress(0);
-        mLlLoadingLayout.setVisibility(View.VISIBLE);
-        mIvVideoBg.setVisibility(View.VISIBLE);
-        uiHandler.removeMessages(PLAY_TIME);
-        mTvDurLeft.setText("00:00");
-        if (mVideoView != null) {
-            mVideoView.stopPlayback();
-        }
-        getPlayUrl();
-        showControl();
-    }
+//    private void playVodByIndex() {
+//
+//        isPlaying = false;
+////        mCurrentTime = 0;
+////        mVideoPlayerProgress.setProgress(0);
+//        mLlLoadingLayout.setVisibility(View.VISIBLE);
+//        mIvVideoBg.setVisibility(View.VISIBLE);
+//        uiHandler.removeMessages(PLAY_TIME);
+//        mTvDurLeft.setText("00:00");
+//        if (mVideoView != null) {
+//            mVideoView.stopPlayback();
+//        }
+//        getPlayUrl();
+//        showControl();
+//    }
 
     /**
      * 添加播放记录
@@ -561,7 +547,7 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
     }
 
     /**
-     * 完成播放自动播放下一个节目
+     * 完成播放
      *
      * @param mp
      */
@@ -569,11 +555,11 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
     public void onCompletion(MediaPlayer mp) {
         isPlaying = false;
         mIvVideoBg.setVisibility(View.VISIBLE);
-        mTvDurLeft.setText("00:00");
-        mTvDurRight.setText("00:00");
+//        mTvDurLeft.setText("00:00");
+//        mTvDurRight.setText("00:00");
         mStopVideoTime=System.currentTimeMillis();
-
-        playNext();          //播放完成，自动播放下一个节目
+        addPlayRecord();     //添加播放记录
+        finish();
     }
 
     /**
@@ -618,13 +604,6 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        /**
-//         * 解决视频播放时，播放时长大于页面停留时长
-//         * mVideoView.pause();
-//         * mVideoView.stopPlayback();
-//         */
-//        mVideoView.pause();
-//        mVideoView.stopPlayback();
         //页面退出时停止播放时间
         mStopVideoTime = System.currentTimeMillis();
         addPlayRecord();   //添加播放记录

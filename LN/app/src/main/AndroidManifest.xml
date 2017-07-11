@@ -20,6 +20,8 @@
         </activity>
         <activity android:name=".LnPlayVideoActivity"
             android:exported="true"/>
+        <activity android:name=".VodIDVideoActivity"
+                  android:exported="true"/>
     </application>
 
 </manifest>
