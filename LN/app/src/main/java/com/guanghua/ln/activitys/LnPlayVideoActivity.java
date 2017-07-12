@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.guanghua.ln.R;
 import com.guanghua.ln.bean.LnBeanPlayItem;
 import com.guanghua.ln.bean.LnPlayUrlBean;
 import com.guanghua.ln.bean.RecordIDBean;
@@ -258,6 +259,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     private void playNext() {
         playIndex++;
         addPlayRecord();     //添加播放记录
+        mInActivityTime = System.currentTimeMillis();
         playVodByIndex();
     }
 

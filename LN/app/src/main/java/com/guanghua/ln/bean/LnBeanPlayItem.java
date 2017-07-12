@@ -1,7 +1,7 @@
 package com.guanghua.ln.bean;
 
 /**
- * Created by fute on 17/1/12.
+ * Created by fute on 17/1/bg.
  */
 
 public class LnBeanPlayItem {

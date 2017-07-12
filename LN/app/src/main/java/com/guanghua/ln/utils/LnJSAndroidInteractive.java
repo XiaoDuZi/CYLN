@@ -20,7 +20,6 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.guanghua.ln.activitys.LnPlayVideoActivity;
-import com.guanghua.ln.activitys.R;
 import com.guanghua.ln.activitys.VodIDVideoActivity;
 import com.guanghua.ln.bean.LnPlayUrlBean;
 import com.guanghua.ln.bean.SmallVideoItemBean;
@@ -65,6 +64,7 @@ public class LnJSAndroidInteractive implements MediaPlayer.OnPreparedListener, M
     public static boolean mHideSmallVideo;
     private String mPlayVodID;
     private int i=0;
+    public static boolean mSearchResultState=true;  //搜索结果状态，ture搜索到结果，false没有搜索到结果
 
     public LnJSAndroidInteractive() {
     }
@@ -256,6 +256,12 @@ public class LnJSAndroidInteractive implements MediaPlayer.OnPreparedListener, M
         Log.e(TAG, "startPlayVideo:" + playListJsonString);
 //        mActivity.startActivityForResult(intent, PLAY_VIDEO);
         mActivity.startActivity(intent);
+    }
+
+    @JavascriptInterface
+    public void searchState(boolean searchResult){
+        Log.e(TAG, "searchState: "+searchResult);
+        mSearchResultState = searchResult;
     }
 
 

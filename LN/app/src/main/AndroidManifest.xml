@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.guanghua.ln.activitys">
+          package="com.guanghua.ln">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -11,17 +11,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activitys.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".LnPlayVideoActivity"
+        <activity android:name=".activitys.MainActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN"/>-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity
+            android:name=".activitys.LnPlayVideoActivity"
             android:exported="true"/>
-        <activity android:name=".VodIDVideoActivity"
-                  android:exported="true"/>
+        <activity
+            android:name=".activitys.VodIDVideoActivity"
+            android:exported="true"/>
+        <activity android:name=".activitys.ExitActivity"/>
+
     </application>
 
 </manifest>

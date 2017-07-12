@@ -3,63 +3,60 @@
     android:id="@+id/parentWarp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_centerInParent="true"
-    android:layout_gravity="center"
-    android:background="@android:color/transparent"
-    android:descendantFocusability="afterDescendants"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:gravity="center"
     android:orientation="vertical">
-
+    <!--android:descendantFocusability="afterDescendants"-->
+    <!--android:layout_centerInParent="true"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:background="@android:color/transparent"-->
+    <!--android:background="@drawable/bg_exit"-->
+    <!--android:src="@drawable/bg_exit"-->
 
     <RelativeLayout
-        android:layout_width="750dp"
-        android:layout_height="420dp"
-        android:background="@color/black"
-        android:orientation="vertical">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:src="@drawable/bg_exit">
+        <!--android:background="@color/black"-->
 
-
-        <View
-            android:id="@+id/lineTop"
-            style="@style/dialog_Line" />
+        <!--<View-->
+        <!--android:id="@+id/lineTop"-->
+        <!--style="@style/dialog_Line" />-->
 
         <TextView
             android:id="@+id/txtTltie"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/lineTop"
-            android:layout_centerHorizontal="true"
             android:gravity="center_horizontal"
             android:padding="10dp"
             android:text="扣费提示"
-            android:layout_marginTop="24dp"
             android:textColor="@color/white"
-            android:textSize="30sp" />
+            android:textSize="30sp"/>
 
         <TextView
             android:id="@+id/txtAbstruct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/txtTltie"
-            android:layout_above="@+id/ll_bottom"
-            android:layout_centerInParent="true"
+            android:layout_marginTop="39dp"
             android:gravity="left"
-            android:text="本次操作将扣除您有线电视账户费用请确认您已征得此户户主同意哦!"
             android:lineSpacingMultiplier="1.2"
             android:paddingLeft="50dp"
-            android:layout_marginTop="50dp"
             android:paddingRight="50dp"
+            android:text="本次操作将扣除您有线电视账户费用请确认您已征得此户户主同意哦!"
             android:textColor="@color/white"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:layout_below="@+id/txtTltie"
+            android:layout_centerHorizontal="true"/>
 
         <LinearLayout
             android:id="@+id/ll_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
-            android:layout_alignParentBottom="true"
             android:orientation="horizontal">
 
             <Button
@@ -73,7 +70,7 @@
                 android:padding="10dp"
                 android:text="确认"
                 android:textColor="@drawable/selector_item_text_color_for_focus"
-                android:textSize="20sp" />
+                android:textSize="20sp"/>
 
 
             <Button
@@ -87,22 +84,22 @@
                 android:padding="10dp"
                 android:text="取消"
                 android:textColor="@drawable/selector_item_text_color_for_focus"
-                android:textSize="20sp" />
+                android:textSize="20sp"/>
         </LinearLayout>
 
-        <View
-            style="@style/dialog_Line"
-            android:layout_alignParentBottom="true"/>
+        <!--<View-->
+        <!--style="@style/dialog_Line"-->
+        <!--android:layout_alignParentBottom="true"/>-->
 
-        <View
-            style="@style/dialog_Line_ver"
-            android:layout_alignParentLeft="true"
-            />
+        <!--<View-->
+        <!--style="@style/dialog_Line_ver"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--/>-->
 
-        <View
-            style="@style/dialog_Line_ver"
-            android:layout_alignParentRight="true"
-            />
+        <!--<View-->
+        <!--style="@style/dialog_Line_ver"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--/>-->
 
     </RelativeLayout>
 

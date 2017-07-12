@@ -47,7 +47,17 @@
         <item name="android:background">@color/colorPrimaryDark</item>
     </style>
 
+    <style name="ActionSheetDialogStyle" parent="Theme.AppCompat">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!--<item name="android:windowContentOverlay">@null</item>-->
+        <!--<item name="android:windowIsFloating">true</item>    &lt;!&ndash; 边框 &ndash;&gt;-->
+        <!--<item name="android:windowFrame">@null</item>-->
+        <!--<item name="android:backgroundDimEnabled">true</item>    &lt;!&ndash; 无标题 &ndash;&gt;-->
+        <item name="android:windowNoTitle">true</item>    <!-- 半透明 -->
+        <item name="android:windowIsTranslucent">true</item>
 
+    </style>
 
 
 </resources>

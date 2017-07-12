@@ -13,9 +13,6 @@ import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.widget.VideoView;
 
-import com.guanghua.ln.activitys.R;
-
-import static android.R.attr.radius;
 
 /**
  * Created by Administrator on 2017/6/14 0014.

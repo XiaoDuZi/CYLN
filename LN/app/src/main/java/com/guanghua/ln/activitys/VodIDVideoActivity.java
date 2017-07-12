@@ -9,8 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,7 +21,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.guanghua.ln.bean.LnBeanPlayItem;
+import com.guanghua.ln.R;
 import com.guanghua.ln.bean.LnPlayUrlBean;
 import com.guanghua.ln.bean.RecordIDBean;
 import com.guanghua.ln.bean.UserLauncherBean;

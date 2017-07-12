@@ -6,7 +6,7 @@ import android.os.Environment;
 import java.io.File;
 
 /**
- * Created by Godfather on 16/4/12.
+ * Created by Godfather on 16/4/bg.
  * <p/>
  * SD卡存储目录
  */

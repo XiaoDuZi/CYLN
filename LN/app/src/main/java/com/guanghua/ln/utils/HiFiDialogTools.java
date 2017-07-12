@@ -11,7 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.guanghua.ln.activitys.R;
+import com.guanghua.ln.R;
 import com.guanghua.ln.interfaces.MyDialogEnterListener;
 
 

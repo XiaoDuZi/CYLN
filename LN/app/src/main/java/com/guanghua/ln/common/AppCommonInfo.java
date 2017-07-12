@@ -22,11 +22,11 @@ public class AppCommonInfo {
     //阿里云
 //    public static String URL="http://120.76.221.222/";
 
-    public static String WEBURL =URL+"ott";
+    public static String WEBURL =URL+"ott/";
     /**
      * 首页
      */
-    public static String INDEX_URL="http://59.46.18.18/ott/index.html?menuPos=";
+    public static String INDEX_URL=WEBURL+"index.html?menuPos=";
 
     /**
      * 播放视频请求头部
@@ -45,7 +45,11 @@ public class AppCommonInfo {
     //第三方sp的id
     public static String SpId = "YPPL";
 
+    //首页
     public static String INDEX_HTML="&backUrl=index.html";
+
+    //列表
+    public static String LIST_HTML="&backUrl=list.html";
 
     //调用平台:HW:华为；ZX:中兴；GD:广电
     public static String Platform = UserLauncherBean.getInstance().getPlatform();   //获取平台
