@@ -3,19 +3,19 @@
     android:shape="rectangle" >
 
     <!-- 描边，边框 -->
-    <stroke
-        android:width="2dp"
-        android:color="@color/gray_red"/>
+    <!--<stroke-->
+        <!--android:width="2dp"-->
+        <!--android:color="@color/exit_border"/>-->
 
     <!-- 设置圆角半径 -->
-    <corners android:radius="30dp"/>
+    <corners android:radius="10dp"/>
 
     <!-- 填充的颜色 -->
-    <solid android:color="@color/transparent" />
+    <solid android:color="@color/exit_color" />
 
     <!-- 大小 -->
     <size
-        android:width="140dp"
+        android:width="120dp"
         android:height="40dp"/><!-- 宽度和高度 -->
 
 </shape>

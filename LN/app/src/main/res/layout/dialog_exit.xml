@@ -1,40 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="@drawable/bg_exit">
+              android:background="@color/thirdty_black"
+              android:gravity="center">
 
-    <TextView
-        android:id="@+id/tv_app_name"
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="260dp"
+        android:background="@drawable/bg_exit">
+
+        <TextView
+            android:id="@+id/tv_app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="要离开TV学堂了吗？"
+            android:textSize="24sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tv_two_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_app_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="扫描右侧二维码 随时随地掌握最新学习动态"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_below="@+id/tv_two_code">
+
+            <Button
+                android:id="@+id/bt_app_continue"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:layout_below="@+id/tv_two_code"
+                android:layout_marginLeft="80dp"
+                android:text="继续学习"
+                android:textSize="18sp"
+                android:background="@drawable/change_button_lock_bg_select"/>
+
+            <Button
+                android:id="@+id/bt_app_exit"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:layout_below="@+id/tv_two_code"
+                android:layout_marginLeft="50dp"
+                android:text="下次再说"
+                android:textSize="18sp"
+                android:background="@drawable/change_button_lock_bg_select"/>
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="344dp"
-        android:layout_marginStart="344dp"
-        android:layout_marginTop="191dp"
-        android:text="TextView"/>
-
-    <Button
-        android:id="@+id/bt_app_exit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="79dp"
-        android:background="@drawable/exit_study"
-        android:layout_below="@+id/tv_app_name"
-        android:layout_toLeftOf="@+id/bt_app_continue"
-        android:layout_toStartOf="@+id/bt_app_continue"/>
-
-    <Button
-        android:id="@+id/bt_app_continue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/continue_study"
-        android:layout_marginLeft="35dp"
-        android:layout_marginStart="35dp"
-        android:layout_alignBaseline="@+id/bt_app_exit"
-        android:layout_alignBottom="@+id/bt_app_exit"
-        android:layout_alignLeft="@+id/tv_app_name"
-        android:layout_alignStart="@+id/tv_app_name"/>
-</RelativeLayout>
+        android:background="@drawable/exit_two_dimendion_code"/>
+</LinearLayout>

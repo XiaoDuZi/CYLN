@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -132,13 +134,13 @@ public class MainActivity extends AppCompatActivity {
         //机顶盒的返回键监听是KEYCODE_ESCAPE
         if (keyCode == KeyEvent.KEYCODE_ESCAPE || keyCode == KeyEvent.KEYCODE_BACK) {
             if (mSearchResultState){  //判断搜索页面状态，如果是true
-                Log.e(TAG, "onKeyDown: "+mSearchResultState);
+                Log.e(TAG, "onKeyDown: error"+mSearchResultState);
             }else {
-                Log.e(TAG, "onKeyDown: "+mSearchResultState);
-//                String call = "javascript:sayHello()";
-//                mWebView.loadUrl(call);
+                Log.e(TAG, "onKeyDown: close22222"+mSearchResultState);
+                String call = "javascript:close_window()";
+                        mWebView.loadUrl(call);
                 mSearchResultState=true;
-                return false;         //如果是false让浏览器获取返回键状态，取消搜索提示
+                return true;         //如果是false让浏览器获取返回键状态，取消搜索提示
             }
             //对当前页面进行判断，如果是首页，点击返回弹出退出提示
             Log.e(TAG, "onKeyDown:endURL " + endUrl);
@@ -191,8 +193,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void finish() {
-        super.finish();
+    protected void onDestroy() {
+        super.onDestroy();
+        //清空所有Cookie
+//        CookieSyncManager.createInstance()
+//        CookieManager cookieManager=CookieManager.getInstance();
+//        cookieManager.removeAllCookie();
+//        CookieManager cookieMa
+//        CookieSyncManager.createInstance(MainActivity.getContext());  //Create a singleton CookieSyncManager within a context
+//        CookieManager cookieManager = CookieManager.getInstance(); // the singleton CookieManager instance
+//        cookieManager.removeAllCookie();// Removes all cookies.
+//        CookieSyncManager.getInstance().sync(); // forces sync manager to sync now
+
+//        deleteDatabase("WebView.db");
+//        deleteDatabase("WebViewCache.db");
+        mWebView.destroy();
+        mWebView.clearHistory();
+        mWebView.clearFormData();
+        getCacheDir().delete();
+        mWebView.setWebChromeClient(null);
+        mWebView.setWebViewClient(null);
+        mWebView.getSettings().setJavaScriptEnabled(false);
         mWebView.clearCache(true);
+
     }
+
 }

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.widget.TextView;
 
 import com.guanghua.ln.R;
@@ -13,7 +14,7 @@ import com.guanghua.ln.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SplashActivity extends AppCompatActivity {
+public class CySplashActivity extends AppCompatActivity {
 
     Handler handler = new Handler();
     @BindView(R.id.tv_vision_code)
@@ -28,11 +29,19 @@ public class SplashActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                Intent intent = new Intent(CySplashActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
             }
-        }, 2000);
+        }, 5000);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode==KeyEvent.KEYCODE_BACK){
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     /**

@@ -611,6 +611,14 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             @Override
             public void onBufferingUpdate(MediaPlayer mp, int percent) {
                 mCurrentTime = mVideoView.getCurrentPosition();                     //当前播放时间获取
+                mVideoView.getDuration();
+
+                // 获得当前播放时间和当前视频的长度
+                int currentPosition =mVideoView.getCurrentPosition();
+                int duration = mVideoView.getDuration();
+                int time = ((currentPosition * 100) / duration);
+                Log.e(TAG, "onBufferingUpdate: "+time);
+                Log.e(TAG, "onBufferingUpdate: "+LnUtils.generateTime(mCurrentTime));
                 mVideoPlayerProgress.setProgress((int) ((mCurrentTime * 1000) / mDuration)); //进度条
                 mTvDurLeft.setText(LnUtils.generateTime(mCurrentTime));
             }

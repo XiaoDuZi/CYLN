@@ -7,8 +7,12 @@ android {
         applicationId "com.guanghua.ln"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 4
-        versionName "1.0.4"
+        //正式
+        versionCode 5
+        versionName "1.0.5"
+        //测试版本号，版本名称
+//        versionCode 4
+//        versionName "1.0.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -18,7 +22,7 @@ android {
             applicationVariants.all { variant ->
                 variant.outputs.each { output ->
                     output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace("app-release.apk",
-                            "gh-ln" + versionName + ".apk"))
+                            "gh-ln-release" + versionName + ".apk"))
                 }
             }
         }

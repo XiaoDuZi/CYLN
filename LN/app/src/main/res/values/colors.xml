@@ -28,4 +28,9 @@
     <color name="gray_white">#848080</color>
 
     <color name="gray_a6">#A6A6A6</color>
+
+    <color name="exit_color">#EACB1C</color>
+
+    <color name="exit_border">#EFF9FC</color>
+
 </resources>

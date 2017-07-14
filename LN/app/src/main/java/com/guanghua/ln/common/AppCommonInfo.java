@@ -30,8 +30,12 @@ public class AppCommonInfo {
 
     /**
      * 播放视频请求头部
+     * 生产环境接口IP是59.46.18.5
+     * 测试环境接口IP是59.46.18.25
      */
-    public static String BASEURL = "http://59.46.18.25:99/spplayurl/";
+    public static String VIDEO_URL="http://59.46.18.5:99/";
+
+    public static String BASEURL =VIDEO_URL+"spplayurl/";
 
     public static String PLAY_RECORD_BASEURL = URL+"LNTVWeb_edu/tvutvgo/";
     /**

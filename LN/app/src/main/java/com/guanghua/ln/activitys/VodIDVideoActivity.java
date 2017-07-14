@@ -291,17 +291,14 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
         Log.e(TAG, "getPlayUrl:mRiddle" + mRiddle);
         Log.e(TAG, "getPlayUrl: " + mPlatform);
 
-        String url = "http://59.46.18.25:99/spplayurl/returnPlayUrl.do?" +
-                "type=4&time=" + mTime + "&riddle=" + mRiddle + "&platform=" +mPlatform+
-                "&spid="+AppCommonInfo.SpId+"&contentid=" + mContentId + "&begintime=&endtime=";
-        Log.e(TAG, "getPlayUrl: URL" +mRecordID+ url);
+        Log.e(TAG, "getPlayUrl: URL" +mRecordID);
 
         Call<LnPlayUrlBean> call = lnPlayUrlService.getPlayUrlInfo(AppCommonInfo.Type, mTime,
                 mRiddle,mPlatform, AppCommonInfo.SpId, mContentId, mBeginTime, mEndTime);
         call.enqueue(new Callback<LnPlayUrlBean>() {
             @Override
             public void onResponse(Call<LnPlayUrlBean> call, Response<LnPlayUrlBean> response) {
-                Log.e(TAG, "onResponse: 请求视频url网络成功");
+                Log.e(TAG, "onResponse: 请求视频url网络成功"+response);
                 mLnPlayUrlBean = response.body();
                 runOnUiThread(new Runnable() {
                     @Override

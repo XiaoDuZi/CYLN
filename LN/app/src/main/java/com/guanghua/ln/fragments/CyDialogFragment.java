@@ -76,6 +76,7 @@ public class CyDialogFragment extends DialogFragment {
         View view=inflater.inflate(R.layout.dialog_exit,container,false);
         Button btExit= (Button) view.findViewById(R.id.bt_app_exit);
         Button btContinue= (Button) view.findViewById(R.id.bt_app_continue);
+        btContinue.findFocus();
 
         btExit.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_splash"
-    tools:context="com.guanghua.ln.activitys.SplashActivity">
+    tools:context="com.guanghua.ln.activitys.CySplashActivity">
 
     <TextView
         android:id="@+id/tv_vision_code"
