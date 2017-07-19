@@ -13,8 +13,7 @@ import retrofit2.http.Query;
  */
 
 public interface ProductIDAuthenticationService {
-    @GET("authenticationOtt_spAuthority.do")
-//    @GET("authenticationOtt_authorityForSp.do")
+    @GET("authenticationOtt_authorityProduct.do")
     Call<AuthenticationBean> getResult(
             @Query("temptoken") String temptoken, @Query("productid") String programid,
             @Query("spid") String spid, @Query("time") long time,

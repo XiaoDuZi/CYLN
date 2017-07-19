@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.TextView;
 
@@ -16,6 +17,8 @@ import butterknife.ButterKnife;
 
 public class CySplashActivity extends AppCompatActivity {
 
+    private static final String TAG = "CySplashActivity";
+
     Handler handler = new Handler();
     @BindView(R.id.tv_vision_code)
     TextView mTvVisionCode;
@@ -25,15 +28,26 @@ public class CySplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
+
+        final String mWebUrl = getIntent().getStringExtra("CYURL");
+        Log.e(TAG, "onCreate: "+mWebUrl);
+
         mTvVisionCode.setText(getVersion());
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 Intent intent = new Intent(CySplashActivity.this, MainActivity.class);
+                intent.putExtra("CYURL",mWebUrl);
                 startActivity(intent);
                 finish();
             }
-        }, 1000);
+        }, 5000);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
     }
 
     @Override

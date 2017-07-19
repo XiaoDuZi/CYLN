@@ -2,7 +2,6 @@ package com.guanghua.ln.activitys;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
-import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -21,15 +19,11 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.guanghua.ln.R;
-import com.guanghua.ln.bean.AuthenticationBean;
-import com.guanghua.ln.bean.UserLauncherBean;
 import com.guanghua.ln.common.AppCommonInfo;
 import com.guanghua.ln.fragments.CyDialogFragment;
-import com.guanghua.ln.interfaces.ProgramIDAuthenticationService;
 import com.guanghua.ln.utils.HiFiDialogTools;
 import com.guanghua.ln.utils.LnAIDLGetInfo;
 import com.guanghua.ln.utils.LnJSAndroidInteractive;
-import com.guanghua.ln.utils.LnUtils;
 import com.guanghua.ln.views.LnVideoView;
 
 import java.io.UnsupportedEncodingException;
@@ -38,20 +32,15 @@ import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.guanghua.ln.utils.DataCleanManager.cleanApplicationData;
 import static com.guanghua.ln.utils.LnJSAndroidInteractive.mSearchResultState;
+import static com.guanghua.ln.utils.LnJSAndroidInteractive.mToActivity;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    HiFiDialogTools mHiFiDialogTools = new HiFiDialogTools();
 
     @BindView(R.id.webView)
     WebView mWebView;
@@ -64,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private String mWebUrl;
     //    private String mUrl;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
         new LnAIDLGetInfo(MainActivity.this);    //AIDL获取用户信息
 
         mWebUrl = getIntent().getStringExtra("CYURL");
-        Log.e(TAG, "onCreate: " + mWebUrl);
+        Log.e(TAG, "onCreate: "+mWebUrl);
+
         if (TextUtils.isEmpty(mWebUrl)) {
             mWebUrl = AppCommonInfo.WEBURL;
         } else if (!mWebUrl.startsWith(AppCommonInfo.WEBURL)) {
@@ -81,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         initViews(savedInstanceState);
         mWebView.addJavascriptInterface(new LnJSAndroidInteractive(MainActivity.this, mFrameLayout,
                 mSmallVideoView, mWebView), "android");
-//        mWebView.addJavascriptInterface(new JsAndroid(), "android");
     }
 
     private void initViews(Bundle savedInstanceState) {
@@ -128,14 +118,38 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     *
+     * @param requestCode 0
+     * @param resultCode 1：订购成功；2：订购失败
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.e(TAG, "onActivityResult: " + requestCode + ":" + resultCode);
         switch (requestCode) {
             case 0:
-                Toast.makeText(MainActivity.this,resultCode+"",Toast.LENGTH_LONG).show();
                 Log.e(TAG, "onActivityResult: " + resultCode + ":");
+                if (resultCode == 1) {//返回
+                    if (mToActivity.equals("LnPlayVideoActivity")){
+                        Intent intent = new Intent(MainActivity.this, LnPlayVideoActivity.class);
+                        startActivity(intent);
+                    }else if (mToActivity.equals("VodIDVideoActivity")){
+                        Intent intent = new Intent(MainActivity.this,VodIDVideoActivity.class);
+                        startActivity(intent);
+                    }
+
+                }else if (resultCode==2){
+                    if (mToActivity.equals("LnPlayVideoActivity")){
+                        Intent intent = new Intent(MainActivity.this, LnPlayVideoActivity.class);
+                        startActivity(intent);
+                    }else if (mToActivity.equals("VodIDVideoActivity")){
+                        Intent intent = new Intent(MainActivity.this,VodIDVideoActivity.class);
+                        startActivity(intent);
+                    }
+                }
+
                 break;
             default:
                 break;
@@ -227,19 +241,9 @@ public class MainActivity extends AppCompatActivity {
                     || currentURL.equals(AppCommonInfo.WEBURL)) {
                 Log.e(TAG, "onKeyDown: showExitDialog");
                 showExitDialog();
-
-//                mHiFiDialogTools.showLeftRightTip(MainActivity.this, "温馨提示", "确认退出" +
-//                                getString(R.string.app_name) + "？", "再玩一会", "退出",
-//                        new MyDialogEnterListener() {
-//                            @Override
-//                            public void onClickEnter(Dialog dialog, Object object) {
-//                                if ((int) object == 1) {
-//                                    finish();
-//                                }
-//                            }
-//                        });
                 return true;
             } else if (mWebView.canGoBack()) {
+//                mWebView.goBack();
                 mWebView.loadUrl(endUrl);
 //                int intIndex = currentURL.indexOf(AppCommonInfo.INDEX_HTML);//查找字符
 //                int listIndex=currentURL.indexOf(AppCommonInfo.LIST_HTML);

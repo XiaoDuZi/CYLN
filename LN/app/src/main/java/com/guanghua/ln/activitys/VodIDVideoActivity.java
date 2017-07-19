@@ -34,9 +34,6 @@ import com.guanghua.ln.utils.LnMD5Utils;
 import com.guanghua.ln.utils.LnUtils;
 import com.guanghua.ln.views.LnVideoView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
@@ -44,6 +41,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.guanghua.ln.utils.LnJSAndroidInteractive.mContentId;
+import static com.guanghua.ln.utils.LnJSAndroidInteractive.mRecordID;
+import static com.guanghua.ln.utils.LnJSAndroidInteractive.playHistoryTitleList;
+import static com.guanghua.ln.utils.LnJSAndroidInteractive.playHistoryTrackIdList;
 
 /**
  * 只获取视频播放ID，然后用于播放
@@ -100,7 +102,8 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
     private String mPlatform;
     private String mSpId = "YPPL";
     //    private String mContentId= "MOV57ce95781170aa34867effa8";
-    private String mContentId;
+//    private String mContentId;
+//    private int mRecordID;
     private String mBeginTime;
     private String mEndTime;
 
@@ -111,15 +114,13 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
     private long mSeekTime;              //快进快退时间
     private int playIndex = 0;           //播放索引
 
-    private ArrayList<String> playTitleList = new ArrayList();
-//    private ArrayList<String> playVodIdList = new ArrayList();
-    private ArrayList<String> playTrackIdList = new ArrayList();
-//    private ArrayList<String> fileTypeList = new ArrayList();
-    private ArrayList<Integer> pointList = new ArrayList();
+//    private ArrayList<String> playTitleList = new ArrayList();
+//    private ArrayList<String> playTrackIdList = new ArrayList();
+//    private ArrayList<String> pointList = new ArrayList();
     private String mFileType;
     private LnPlayUrlBean mLnPlayUrlBean;
 
-    private int mRecordID; //添加播放记录
+
     private String mTvName; //视频名称
     private String mUserName; //用户名：和keyNo相同
     private String mTrackID;  //
@@ -182,41 +183,42 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
         mVideoView.setOnCompletionListener(this);
     }
 
-    /**
-     * 获取播放RecordID
-     */
-    private void getRecordID() {
-        mTrackID=playTrackIdList.get(0);
-        Log.e(TAG, "onResponse: " + mTrackID + ":" + mUserName);
-        Retrofit mRetrofit = new Retrofit.Builder()
-                .baseUrl(AppCommonInfo.RECORDID_BASEURL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        LnRecordIdService mLnRecordIdService = mRetrofit.create(LnRecordIdService.class);
-        Call<RecordIDBean> mRecordIDBeanCall = mLnRecordIdService.getRecordID(mTrackID, mUserName);
-        mRecordIDBeanCall.enqueue(new Callback<RecordIDBean>() {
-
-            @Override
-            public void onResponse(Call<RecordIDBean> call, Response<RecordIDBean> response) {
-                Log.e(TAG, call + "onResponse: RecordID获取访问网络成功！" + response);
-
-                RecordIDBean recordIDBean = new RecordIDBean();
-                recordIDBean = response.body();
-                try{
-                    mRecordID = recordIDBean.getRecordId();
-                    mContentId=recordIDBean.getData().getVodId();
-                    getPlayUrl();   //获取视频播放URL
-                }catch (NullPointerException e){
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<RecordIDBean> call, Throwable t) {
-                Log.e(TAG, "onFailure: 获取RecordID请求网络失败"+t.toString());
-            }
-        });
-    }
+//    /**
+//     * 获取播放RecordID
+//     */
+//    private void getRecordID() {
+//        mTrackID=playHistoryTrackIdList.get(0);
+//        Log.e(TAG, "onResponse: " + mTrackID + ":" + mUserName);
+//        Retrofit mRetrofit = new Retrofit.Builder()
+//                .baseUrl(AppCommonInfo.RECORDID_BASEURL)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//        LnRecordIdService mLnRecordIdService = mRetrofit.create(LnRecordIdService.class);
+//        Call<RecordIDBean> mRecordIDBeanCall = mLnRecordIdService.getRecordID(mTrackID, mUserName);
+//        mRecordIDBeanCall.enqueue(new Callback<RecordIDBean>() {
+//
+//            @Override
+//            public void onResponse(Call<RecordIDBean> call, Response<RecordIDBean> response) {
+//                Log.e(TAG, call + "onResponse: RecordID获取访问网络成功！" + response);
+//
+//                RecordIDBean recordIDBean = new RecordIDBean();
+//                recordIDBean = response.body();
+//                try{
+//                    mRecordID = recordIDBean.getRecordId();
+//                    mContentId=recordIDBean.getData().getVodId();
+//                    Log.e(TAG, "onResponse: "+mRecordID+":"+mContentId);
+//                    getPlayUrl();   //获取视频播放URL
+//                }catch (NullPointerException e){
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<RecordIDBean> call, Throwable t) {
+//                Log.e(TAG, "onFailure: 获取RecordID请求网络失败"+t.toString());
+//            }
+//        });
+//    }
 
     /**
      * 获取播放信息
@@ -229,27 +231,28 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
         } else {
             mUserName = UserLauncherBean.getInstance().getUserName();   //获取用户名
         }
+        getPlayUrl();   //获取视频播放URL
 
-        String playListJsonString = getIntent().getStringExtra("startVodIDVideo");//获取播放信息
-        Log.e(TAG, "initDatas: "+playListJsonString);
-        List<TrackIDBean> playItemList = new ArrayList<>();
-        Gson gson = new Gson();
-        playItemList = gson.fromJson(playListJsonString, new TypeToken<List<TrackIDBean>>() {
-        }.getType());
+//        String playListJsonString = getIntent().getStringExtra("startVodIDVideo");//获取播放信息
+//        Log.e(TAG, "initDatas: "+playListJsonString);
+//        List<TrackIDBean> playItemList = new ArrayList<>();
+//        Gson gson = new Gson();
+//        playItemList = gson.fromJson(playListJsonString, new TypeToken<List<TrackIDBean>>() {
+//        }.getType());
 
-        if (playItemList.isEmpty()) {
-            return;
-        }
-        for (int i = 0; i < playItemList.size(); i++) {
-            TrackIDBean playItem = playItemList.get(i);
-            Log.e(TAG, "initDatas: "+playItem+":"+playItem.getName());
-            playTitleList.add(playItem.getName());
+//        if (playItemList.isEmpty()) {
+//            return;
+//        }
+//        for (int i = 0; i < playItemList.size(); i++) {
+//            TrackIDBean playItem = playItemList.get(i);
+//            Log.e(TAG, "initDatas: "+playItem+":"+playItem.getName());
+//            playTitleList.add(playItem.getName());
 //            playVodIdList.add(playItem.getVodId().trim());
 //            fileTypeList.add(playItem.getFileType());
-//            pointList.add(playItem.getInitPoint());
-            playTrackIdList.add(playItem.getTrackId() + "");
-        }
-        getRecordID();
+//            pointList.add(playItem.getPoint());
+//            playTrackIdList.add(playItem.getTrackId() + "");
+//        }
+//        getRecordID();
 //        if (playIndex >= playItemList.size()) {
 //            playIndex = 0;
 //        }
@@ -276,8 +279,8 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
     private void getPlayUrl() {
         Log.e(TAG, "getPlayUrl: "+mContentId);
 
-        mTvName = playTitleList.get(playIndex);  //获取视频名称
-        mTrackID = playTrackIdList.get(playIndex); //获取mTrackID
+        mTvName = playHistoryTitleList.get(playIndex);  //获取视频名称
+        mTrackID = playHistoryTrackIdList.get(playIndex); //获取mTrackID
         mTvTitle.setText(mTvName);
 
         mTime = System.currentTimeMillis();                                     //获取时间戳

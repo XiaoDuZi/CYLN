@@ -28,6 +28,7 @@ import com.guanghua.ln.bean.LnBeanPlayItem;
 import com.guanghua.ln.bean.LnPlayUrlBean;
 import com.guanghua.ln.bean.RecordIDBean;
 import com.guanghua.ln.bean.UserLauncherBean;
+import com.guanghua.ln.common.AddPlayHistory;
 import com.guanghua.ln.common.AppCommonInfo;
 import com.guanghua.ln.interfaces.LnPlayUrlService;
 import com.guanghua.ln.interfaces.LnRecordIdService;
@@ -270,6 +271,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     private void playNext() {
         playIndex1++;
         addPlayRecord();     //添加播放记录
+
         mInActivityTime = System.currentTimeMillis();
         playVodByIndex();
     }
@@ -499,10 +501,6 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     private void addPlayRecord() {
 
         final long stayTime = (long) Math.ceil(mStopVideoTime - mInActivityTime);   //获取页面停留时间
-//        Log.e(TAG, "addPlayRecord: "+mCurrentTime+":::"+stayTime+":"+ mStopVideoTime +":"+mInActivityTime+":"+stayTime);
-//
-//        Log.e(TAG, "addPlayRecord: " + mUserName + ":" + mRecordID + ":" + mTrackID + ":" + mContentId + ":" +
-//                mTvName + ":" + stayTime);
 
         Retrofit addPlayRecordRetrofit = new Retrofit.Builder()
                 .baseUrl(AppCommonInfo.PLAY_RECORD_BASEURL)
@@ -634,10 +632,9 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AppCommonInfo.sInPlayVideo=false;
         mStopVideoTime = System.currentTimeMillis();
-        addPlayRecord();   //添加播放记录
-        System.gc();    //退出回收系统垃圾
+        addPlayRecord();     //添加播放记录
+        System.gc();         //退出回收系统垃圾
     }
 
 }

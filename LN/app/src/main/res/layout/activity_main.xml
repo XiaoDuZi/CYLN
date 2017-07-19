@@ -19,7 +19,7 @@
         android:layout_height="282dp"
         android:layout_marginLeft="116dp"
         android:layout_marginTop="178dp"
-        android:foreground="@drawable/blue_border_video"
+        android:foreground="@drawable/video_border"
         android:visibility="gone"
         tools:ignore="RtlHardcoded">
         <com.guanghua.ln.views.LnVideoView

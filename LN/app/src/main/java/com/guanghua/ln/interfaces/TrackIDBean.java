@@ -56,4 +56,14 @@ public class TrackIDBean {
     public void setPoint(String point) {
         this.point = point;
     }
+
+    @Override
+    public String toString() {
+        return "TrackIDBean{" +
+                "name='" + name + '\'' +
+                ", trackId='" + trackId + '\'' +
+                ", vodId='" + vodId + '\'' +
+                ", point='" + point + '\'' +
+                '}';
+    }
 }
