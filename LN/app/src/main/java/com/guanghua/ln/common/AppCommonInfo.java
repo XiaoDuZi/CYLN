@@ -18,9 +18,9 @@ public class AppCommonInfo {
      * "file:///android_asset/ott_6.5/album_video_list.html"
      */
     //辽宁测试网
-    public static String URL="http://59.46.18.18/";
+//    public static String URL="http://59.46.18.18/";
     //阿里云
-//    public static String URL="http://120.76.221.222/";
+    public static String URL="http://120.76.221.222/";
 
     public static String WEBURL =URL+"ott/";
     /**
@@ -33,15 +33,20 @@ public class AppCommonInfo {
      * 生产环境接口IP是59.46.18.5
      * 测试环境接口IP是59.46.18.25
      */
-    public static String VIDEO_URL="http://59.46.18.5:99/";
+    public static String VIDEO_URL="http://59.46.18.25:99/";
 
     public static String BASEURL =VIDEO_URL+"spplayurl/";
-
-    public static String PLAY_RECORD_BASEURL = URL+"LNTVWeb_edu/tvutvgo/";
+//辽宁
+//    public static String PLAY_RECORD_BASEURL = URL+"LNTVWeb_edu/tvutvgo/";
+//    阿里云
+    public static String PLAY_RECORD_BASEURL = URL+"CQTVWeb_edu/tvutvgo/";
     /**
      * 获取RecordId
      */
-    public static String RECORDID_BASEURL = URL+"LNTVWeb_edu/hifi/hifiData/";
+//    辽宁
+//    public static String RECORDID_BASEURL = URL+"LNTVWeb_edu/hifi/hifiData/";
+//    阿里云
+    public static String RECORDID_BASEURL = URL+"CQTVWeb_edu/hifi/hifiData/";
 
     //视频播放类型 1：直播；2：回看；4：点播（默认为点播）
     public static int Type = 4;
@@ -60,4 +65,6 @@ public class AppCommonInfo {
 
     public static long mTime = System.currentTimeMillis();                                     //获取时间戳
     public static String mRiddle = LnMD5Utils.MD5(System.currentTimeMillis() + "besto");           //加密串加密串（时间戳+key的md5值），
+
+    public static boolean sInPlayVideo=false;
 }

@@ -9,7 +9,7 @@ android {
         targetSdkVersion 25
         //正式
         versionCode 5
-        versionName "1.0.5"
+        versionName "1.0.5.debug"
         //测试版本号，版本名称
 //        versionCode 4
 //        versionName "1.0.4"

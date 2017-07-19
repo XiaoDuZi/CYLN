@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -48,6 +47,14 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.guanghua.ln.common.AppCommonInfo.BASEURL;
+import static com.guanghua.ln.utils.LnJSAndroidInteractive.fileTypeList;
+import static com.guanghua.ln.utils.LnJSAndroidInteractive.playIndex1;
+import static com.guanghua.ln.utils.LnJSAndroidInteractive.playItemList;
+import static com.guanghua.ln.utils.LnJSAndroidInteractive.playTitleList;
+import static com.guanghua.ln.utils.LnJSAndroidInteractive.playTrackIdList;
+import static com.guanghua.ln.utils.LnJSAndroidInteractive.playVodIdList;
+
 public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
     private static final String TAG = "LnPlayVideoActivity";
@@ -59,6 +66,8 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     private static final int HIDE_CONTROL = 8;          //隐藏操作界面
     private static final int PLAY_TIME = 9;             //播放时间
     private static final int QUICK_INTERVAL_ITEM = 60;  //快进的时间间隔
+
+//    public static boolean sInPlayVideo=false;
 
 
     @BindView(R.id.iv_video_bg)
@@ -109,13 +118,13 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     private long mDuration;              //视频总时长
     private boolean startQuick = false;
     private long mSeekTime;              //快进快退时间
-    private int playIndex = 0;           //播放索引
+//    private int playIndex = 0;           //播放索引
 
-    private ArrayList<String> playTitleList = new ArrayList();
-    private ArrayList<String> playVodIdList = new ArrayList();
-    private ArrayList<String> playTrackIdList = new ArrayList();
-    private ArrayList<String> fileTypeList = new ArrayList();
-    private ArrayList<Integer> pointList = new ArrayList();
+//    private ArrayList<String> playTitleList = new ArrayList();
+//    private ArrayList<String> playVodIdList = new ArrayList();
+//    private ArrayList<String> playTrackIdList = new ArrayList();
+//    private ArrayList<String> fileTypeList = new ArrayList();
+//    private ArrayList<Integer> pointList = new ArrayList();
     private String mFileType;
     private LnPlayUrlBean mLnPlayUrlBean;
 
@@ -175,6 +184,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         ButterKnife.bind(this);
 
         mInActivityTime = System.currentTimeMillis();
+        AppCommonInfo.sInPlayVideo=true;
 //        getRecordID();//
         initDatas();   //获取播放信息
         getPlayUrl();
@@ -232,32 +242,33 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             mUserName = UserLauncherBean.getInstance().getUserName();   //获取用户名
         }
 
-        String playListJsonString = getIntent().getStringExtra("playListJsonString");//获取播放信息
-        playIndex = getIntent().getIntExtra("playIndex", 0);            //获取播放位置索引
-        List<LnBeanPlayItem> playItemList = new ArrayList<>();
-        Gson gson = new Gson();
-        playItemList = gson.fromJson(playListJsonString, new TypeToken<List<LnBeanPlayItem>>() {
-        }.getType());
-
-        if (playItemList.isEmpty()) {
-            return;
-        }
-        for (int i = 0; i < playItemList.size(); i++) {
-            LnBeanPlayItem playItem = playItemList.get(i);
-            Log.e(TAG, "initDatas: "+playItem+":"+playItem.getName());
-            playTitleList.add(playItem.getName());
-            playVodIdList.add(playItem.getVodId().trim());
-            fileTypeList.add(playItem.getFileType());
-            pointList.add(playItem.getInitPoint());
-            playTrackIdList.add(playItem.getTrackId() + "");
-        }
-        if (playIndex >= playItemList.size()) {
-            playIndex = 0;
+//        String playListJsonString = getIntent().getStringExtra("playListJsonString");//获取播放信息
+//        playIndex = getIntent().getIntExtra("playIndex", 0);            //获取播放位置索引
+//        List<LnBeanPlayItem> playItemList = new ArrayList<>();
+//        Gson gson = new Gson();
+//        playItemList = gson.fromJson(playListJsonString, new TypeToken<List<LnBeanPlayItem>>() {
+//        }.getType());
+//
+//        if (playItemList.isEmpty()) {
+//            return;
+//        }
+//        for (int i = 0; i < playItemList.size(); i++) {
+//            LnBeanPlayItem playItem = playItemList.get(i);
+//            Log.e(TAG, "initDatas: "+playItem+":"+playItem.getName());
+//            playTitleList.add(playItem.getName());
+//            playVodIdList.add(playItem.getVodId().trim());
+//            fileTypeList.add(playItem.getFileType());
+//            pointList.add(playItem.getInitPoint());
+//            playTrackIdList.add(playItem.getTrackId() + "");
+//        }
+        Log.e(TAG, "initDatas: "+playIndex1+":"+playItemList.size());
+        if (playIndex1 >= playItemList.size()) {
+            playIndex1 = 0;
         }
     }
 
     private void playNext() {
-        playIndex++;
+        playIndex1++;
         addPlayRecord();     //添加播放记录
         mInActivityTime = System.currentTimeMillis();
         playVodByIndex();
@@ -277,15 +288,15 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
      */
     private void getPlayUrl() {
 
-        Log.e(TAG, "getPlayUrl: ");
+        Log.e(TAG, "getPlayUrl: "+playIndex1);
 
-        mTvName = playTitleList.get(playIndex);  //获取视频名称
-        mTrackID = playTrackIdList.get(playIndex); //获取mTrackID
+        mTvName = playTitleList.get(playIndex1);  //获取视频名称
+        mTrackID = playTrackIdList.get(playIndex1); //获取mTrackID
         mTvTitle.setText(mTvName);
 
-        mFileType = fileTypeList.get(playIndex);  //播放文件类型：1：视频：其他：音乐
+        mFileType = fileTypeList.get(playIndex1);  //播放文件类型：1：视频：其他：音乐
 //        if (TextUtils.equals(mFileType, "1")) { //判断是视频还是纯音乐
-//            mIvVideoBg.setImageResource(R.mipmap.home_bg);
+//            mIvVideoBg.setImageResource(R.mipmap.home_bg_no_use);
 //        } else { //音乐
 //            mIvVideoBg.setImageResource(R.mipmap.play_music_bg);
 //            mVideoView.setVisibility(View.INVISIBLE);
@@ -294,27 +305,24 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         mRiddle = LnMD5Utils.MD5(System.currentTimeMillis() + "besto");           //加密串加密串（时间戳+key的md5值），
 
         // key值固定写为besto
-        mContentId = playVodIdList.get(playIndex);    //获取视频ID
+        mContentId = playVodIdList.get(playIndex1);    //获取视频ID
 
         Retrofit retrofit = new Retrofit.Builder()                          //使用Retrofit网络框架进行访问网络
-                .baseUrl(AppCommonInfo.BASEURL)
+                .baseUrl(BASEURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         LnPlayUrlService lnPlayUrlService = retrofit.create(LnPlayUrlService.class);
         Log.e(TAG, "getPlayUrl:mRiddle" + mRiddle);
         Log.e(TAG, "getPlayUrl: " + mPlatform);
 
-        String url = "http://59.46.18.25:99/spplayurl/returnPlayUrl.do?" +
-                "type=4&time=" + mTime + "&riddle=" + mRiddle + "&platform=" +mPlatform+
-                "&spid="+AppCommonInfo.SpId+"&contentid=" + mContentId + "&begintime=&endtime=";
-        Log.e(TAG, "getPlayUrl: URL" +mRecordID+ url);
+        Log.e(TAG, "getPlayUrl: URL" +mRecordID);
 
         Call<LnPlayUrlBean> call = lnPlayUrlService.getPlayUrlInfo(AppCommonInfo.Type, mTime,
                 mRiddle,mPlatform, AppCommonInfo.SpId, mContentId, mBeginTime, mEndTime);
         call.enqueue(new Callback<LnPlayUrlBean>() {
             @Override
             public void onResponse(Call<LnPlayUrlBean> call, Response<LnPlayUrlBean> response) {
-                Log.e(TAG, "onResponse: 请求视频url网络成功");
+                Log.e(TAG, "onResponse: 请求视频url网络成功"+response.toString());
                 mLnPlayUrlBean = response.body();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -451,16 +459,14 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
      * 显示播放列表
      */
     private void showPlayList() {
-        Log.e(TAG, "showPlayList: ");
         mRlPlayList.setVisibility(View.VISIBLE);
-
         mLvPlay.setAdapter(new ArrayAdapter<String>(this, R.layout.ln_item_play_list, playTitleList));
-
+        mLvPlay.setSelection(playIndex1);
         mLvPlay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 mStopVideoTime = System.currentTimeMillis();
-                playIndex = i;
+                playIndex1 = i;
                 playVodByIndex();  //播放选中的 视频
                 mRlPlayList.setVisibility(View.GONE);
             }
@@ -469,7 +475,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 
     private void playVodByIndex() {
 
-        if (playIndex >= playVodIdList.size()) {
+        if (playIndex1 >= playVodIdList.size()) {
             finish();
             return;
         }
@@ -628,14 +634,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        /**
-//         * 解决视频播放时，播放时长大于页面停留时长
-//         * mVideoView.pause();
-//         * mVideoView.stopPlayback();
-//         */
-//        mVideoView.pause();
-//        mVideoView.stopPlayback();
-        //页面退出时停止播放时间
+        AppCommonInfo.sInPlayVideo=false;
         mStopVideoTime = System.currentTimeMillis();
         addPlayRecord();   //添加播放记录
         System.gc();    //退出回收系统垃圾
