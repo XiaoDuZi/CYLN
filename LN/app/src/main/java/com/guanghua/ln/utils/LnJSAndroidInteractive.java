@@ -99,7 +99,7 @@ public class LnJSAndroidInteractive extends MainActivity
 
     long time = System.currentTimeMillis();
     String riddle = LnUtils.MD5(System.currentTimeMillis() + "spauth");
-    String programid = "";
+    String programid;
     WebView mWebView;
 
     private String mResult;
@@ -130,7 +130,6 @@ public class LnJSAndroidInteractive extends MainActivity
                 mLnVideoView.setVisibility(View.GONE);
             }
         });
-
     }
 
     /**
@@ -307,8 +306,10 @@ public class LnJSAndroidInteractive extends MainActivity
      * @param productID
      */
     @JavascriptInterface
-    public void videoListOrderAuthentication(String productID){}
-
+    public void videoListOrderAuthentication(String productID){
+        Log.e(TAG, "videoListOrderAuthentication: "+productID);
+        authentication(productID);
+    }
 
     @JavascriptInterface
     public void searchState(boolean searchResult) {
@@ -382,9 +383,15 @@ public class LnJSAndroidInteractive extends MainActivity
         Log.e(TAG, "authentication: "+temptoken);
         Log.e(TAG, "authentication: ProductID"+productID);
 //        programid = "240001310";
-//        programid = "240001308";
+        programid = "240001308";
+//        programid = "240001312";
+//        240001311 240001312
 //        programid = "PRO0000000296";
-        programid = productID;
+//        programid = "PRO0000000297";
+//        programid = productID;
+//        240001314  240001313 这两个是新建立的自动续订的产品
+//        programid="240001313";
+
         Log.e(TAG, "authentication: "+productID);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://59.46.18.48:99/authbilling/")
@@ -442,13 +449,15 @@ public class LnJSAndroidInteractive extends MainActivity
                 "com.widgetdo.ottboxforgx.activity.OrderListOutwardActivity");
         Intent intent = new Intent();
         intent.setComponent(componentName);
-        intent.putExtra("videoname","");
-        intent.putExtra("desc", "晚上一起去看变形金刚吧，亲！");
+        intent.putExtra("videoname","变形记");
+        intent.putExtra("desc", "你好辽宁");
 //        intent.putExtra("desc",programid);
 //        intent.putExtra("contentid","MOV57ce95781170aa34867effa8");
-        intent.putExtra("contentid", "PRO56b454431170126b36ef96fc");
-        intent.putExtra("spid", "YPPL");
-        intent.putExtra("contenttype", "1");
+//        intent.putExtra("contentid", "PRO56b454431170126b36ef96fc");
+        Log.e(TAG, "goToOrderActivity: "+programid);
+        intent.putExtra("contentid",programid);
+        intent.putExtra("spid",AppCommonInfo.SpId);
+        intent.putExtra("contenttype", "2");//视频类型：1：视频；2：游戏
         intent.putExtras(intent);
         ((AppCompatActivity) mContext).startActivityForResult(intent, 0);
 

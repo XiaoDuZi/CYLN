@@ -21,14 +21,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.guanghua.ln.R;
-import com.guanghua.ln.bean.LnBeanPlayItem;
 import com.guanghua.ln.bean.LnPlayUrlBean;
 import com.guanghua.ln.bean.RecordIDBean;
 import com.guanghua.ln.bean.UserLauncherBean;
-import com.guanghua.ln.common.AddPlayHistory;
 import com.guanghua.ln.common.AppCommonInfo;
 import com.guanghua.ln.interfaces.LnPlayUrlService;
 import com.guanghua.ln.interfaces.LnRecordIdService;
@@ -36,9 +32,6 @@ import com.guanghua.ln.interfaces.PlayRecordService;
 import com.guanghua.ln.utils.LnMD5Utils;
 import com.guanghua.ln.utils.LnUtils;
 import com.guanghua.ln.views.LnVideoView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

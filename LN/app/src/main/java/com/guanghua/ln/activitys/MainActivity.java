@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -16,17 +18,20 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.guanghua.ln.R;
 import com.guanghua.ln.common.AppCommonInfo;
+import com.guanghua.ln.common.DownLoadImage;
 import com.guanghua.ln.fragments.CyDialogFragment;
-import com.guanghua.ln.utils.HiFiDialogTools;
 import com.guanghua.ln.utils.LnAIDLGetInfo;
 import com.guanghua.ln.utils.LnJSAndroidInteractive;
 import com.guanghua.ln.views.LnVideoView;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         new LnAIDLGetInfo(MainActivity.this);    //AIDL获取用户信息
 
         mWebUrl = getIntent().getStringExtra("CYURL");
-        Log.e(TAG, "onCreate: "+mWebUrl);
+        Log.e(TAG, "onCreate: " + mWebUrl);
 
         if (TextUtils.isEmpty(mWebUrl)) {
             mWebUrl = AppCommonInfo.WEBURL;
@@ -72,9 +77,50 @@ public class MainActivity extends AppCompatActivity {
         initViews(savedInstanceState);
         mWebView.addJavascriptInterface(new LnJSAndroidInteractive(MainActivity.this, mFrameLayout,
                 mSmallVideoView, mWebView), "android");
+
+        new DownloadImageTask().execute("http://59.46.18.18/ott/app/video_border.png",
+                "http://59.46.18.18/ott/app/home_bg.jpg");
+    }
+
+    private Drawable loadImageFromNetwork(String imageUrl) {
+        Drawable drawable = null;
+        try {
+            // 可以在这里通过第二个参数(文件名)来判断，是否本地有此图片
+            drawable = Drawable.createFromStream(new URL(imageUrl).openStream(), null);
+        } catch (IOException e) {
+            Log.d("skythinking", e.getMessage());
+        }
+        if (drawable == null) {
+            Log.d("skythinking", "null drawable");
+        } else {
+            Log.d("skythinking", "not null drawable");
+        }
+
+//        compress(Bitmap.CompressFormat.JPEG, 100,drawable);
+
+        return drawable;
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, List<Drawable>> {
+
+        protected List<Drawable> doInBackground(String... urls) {
+            List<Drawable> drawable=new ArrayList<>();
+            for (int i=0;i<urls.length;i++){
+                drawable.add(loadImageFromNetwork(urls[i]));
+            }
+            return drawable;
+        }
+
+        protected void onPostExecute(List<Drawable> result) {
+            for (int i=0;i<result.size();i++){
+                mFrameLayout.setForeground(result.get(0));
+                mWebView.setBackground(result.get(1));
+            }
+        }
     }
 
     private void initViews(Bundle savedInstanceState) {
+
         mWebSettings = mWebView.getSettings();
         mWebSettings.setJavaScriptEnabled(true);
         // 设置允许JS弹窗
@@ -83,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         mWebView.setBackgroundColor(getResources().getColor(R.color.transparent));
-        mWebView.setBackgroundResource(R.drawable.home_bg);
+//        mWebView.setBackgroundResource(R.drawable.home_bg);
 //        mWebView.setWebChromeClient(new WebChromeClient());
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.clearHistory();
@@ -119,9 +165,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     *
      * @param requestCode 0
-     * @param resultCode 1：订购成功；2：订购失败
+     * @param resultCode  1：订购成功；2：订购失败
      * @param data
      */
     @Override
@@ -132,20 +177,20 @@ public class MainActivity extends AppCompatActivity {
             case 0:
                 Log.e(TAG, "onActivityResult: " + resultCode + ":");
                 if (resultCode == 1) {//返回
-                    if (mToActivity.equals("LnPlayVideoActivity")){
+                    if (mToActivity.equals("LnPlayVideoActivity")) {
                         Intent intent = new Intent(MainActivity.this, LnPlayVideoActivity.class);
                         startActivity(intent);
-                    }else if (mToActivity.equals("VodIDVideoActivity")){
-                        Intent intent = new Intent(MainActivity.this,VodIDVideoActivity.class);
+                    } else if (mToActivity.equals("VodIDVideoActivity")) {
+                        Intent intent = new Intent(MainActivity.this, VodIDVideoActivity.class);
                         startActivity(intent);
                     }
 
-                }else if (resultCode==2){
-                    if (mToActivity.equals("LnPlayVideoActivity")){
+                } else if (resultCode == 2) {
+                    if (mToActivity.equals("LnPlayVideoActivity")) {
                         Intent intent = new Intent(MainActivity.this, LnPlayVideoActivity.class);
                         startActivity(intent);
-                    }else if (mToActivity.equals("VodIDVideoActivity")){
-                        Intent intent = new Intent(MainActivity.this,VodIDVideoActivity.class);
+                    } else if (mToActivity.equals("VodIDVideoActivity")) {
+                        Intent intent = new Intent(MainActivity.this, VodIDVideoActivity.class);
                         startActivity(intent);
                     }
                 }
@@ -234,10 +279,10 @@ public class MainActivity extends AppCompatActivity {
                 mSearchResultState = true;
                 return true;         //如果是false让浏览器获取返回键状态，取消搜索提示
             }
-//            ||endUrl.equals(AppCommonInfo.INDEX_URL+currentURL.substring(currentURL.length()-1)+"true")
-            Log.e(TAG, "onKeyDown:5555 " + AppCommonInfo.INDEX_URL + currentURL.substring(currentURL.length() - 1) + "true");
+            //首页各个Item:URL
+            String homeItemUrl = AppCommonInfo.INDEX_URL + currentURL.substring(currentURL.length() - 1);
             //对当前页面进行判断，如果是首页，点击返回弹出退出提示
-            if ((currentURL.equals(AppCommonInfo.INDEX_URL + currentURL.substring(currentURL.length() - 1)))
+            if ((currentURL.equals(homeItemUrl))
                     || currentURL.equals(AppCommonInfo.WEBURL)) {
                 Log.e(TAG, "onKeyDown: showExitDialog");
                 showExitDialog();
@@ -245,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (mWebView.canGoBack()) {
 //                mWebView.goBack();
                 mWebView.loadUrl(endUrl);
+
 //                int intIndex = currentURL.indexOf(AppCommonInfo.INDEX_HTML);//查找字符
 //                int listIndex=currentURL.indexOf(AppCommonInfo.LIST_HTML);
 //                if (listIndex==-1){
