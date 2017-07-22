@@ -2,6 +2,7 @@ package com.guanghua.ln.common;
 
 import com.guanghua.ln.bean.UserLauncherBean;
 import com.guanghua.ln.utils.LnMD5Utils;
+import com.guanghua.ln.utils.LnUtils;
 
 /**
  * Created by Administrator on 2017/6/21 0021.
@@ -18,53 +19,58 @@ public class AppCommonInfo {
      * "file:///android_asset/ott_6.5/album_video_list.html"
      */
     //辽宁测试网
-//    public static String URL="http://59.46.18.18/";
+    public static String URL = "http://59.46.18.18/";
     //阿里云
-    public static String URL="http://120.76.221.222/";
+//    public static String URL="http://120.76.221.222/";
 
-    public static String WEBURL =URL+"ott/";
+    public static String WEBURL = URL + "ott/";
     /**
      * 首页
      */
-    public static String INDEX_URL=WEBURL+"index.html?menuPos=";
+    public static String INDEX_URL = WEBURL + "index.html?menuPos=";
 
     /**
      * 播放视频请求头部
      * 生产环境接口IP是59.46.18.5
      * 测试环境接口IP是59.46.18.25
      */
-    public static String VIDEO_URL="http://59.46.18.25:99/";
+    public static String VIDEO_URL = "http://59.46.18.25:99/";
 
-    public static String BASEURL =VIDEO_URL+"spplayurl/";
-//辽宁
-//    public static String PLAY_RECORD_BASEURL = URL+"LNTVWeb_edu/tvutvgo/";
+    public static String BASEURL = VIDEO_URL + "spplayurl/";
+    //辽宁
+    public static String PLAY_RECORD_BASEURL = URL + "LNTVWeb_edu/tvutvgo/";
 //    阿里云
-    public static String PLAY_RECORD_BASEURL = URL+"CQTVWeb_edu/tvutvgo/";
+//    public static String PLAY_RECORD_BASEURL = URL+"CQTVWeb_edu/tvutvgo/";
     /**
      * 获取RecordId
      */
 //    辽宁
-//    public static String RECORDID_BASEURL = URL+"LNTVWeb_edu/hifi/hifiData/";
+    public static String RECORDID_BASEURL = URL + "LNTVWeb_edu/hifi/hifiData/";
 //    阿里云
-    public static String RECORDID_BASEURL = URL+"CQTVWeb_edu/hifi/hifiData/";
+//    public static String RECORDID_BASEURL = URL+"CQTVWeb_edu/hifi/hifiData/";
 
     //视频播放类型 1：直播；2：回看；4：点播（默认为点播）
     public static int Type = 4;
 
     //第三方sp的id
-    public static String SpId = "YPPL";
+//    public static String SpId = "YPPL";
+    //sp ID：
+    public static String SpId = "CQGH";
 
     //首页
-    public static String INDEX_HTML="&backUrl=index.html";
+    public static String INDEX_HTML = "&backUrl=index.html";
 
     //列表
-    public static String LIST_HTML="&backUrl=list.html";
+    public static String LIST_HTML = "&backUrl=list.html";
 
     //调用平台:HW:华为；ZX:中兴；GD:广电
     public static String Platform = UserLauncherBean.getInstance().getPlatform();   //获取平台
 
-    public static long mTime = System.currentTimeMillis();                                     //获取时间戳
-    public static String mRiddle = LnMD5Utils.MD5(System.currentTimeMillis() + "besto");           //加密串加密串（时间戳+key的md5值），
+    //产品，内容鉴权加密串，Key值
+    public static String PRODUCT_PROGRAM_KEY="spauth";
 
-    public static boolean sInPlayVideo=false;
+    //播放接口链接加密串，Key值
+    public static String PLAY_KEY="besto";
+
+    public static boolean sInPlayVideo = false;
 }

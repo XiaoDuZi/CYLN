@@ -58,7 +58,7 @@
             android:background="@color/thirdty_black"
             android:padding="15dp"
             android:paddingLeft="25dp"
-            android:text="标题标题"
+            android:text="@string/play_video_name"
             android:textColor="#ffffff"
             android:textSize="25dp"/>
         <!--暂停-->

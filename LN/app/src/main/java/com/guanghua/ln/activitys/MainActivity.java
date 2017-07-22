@@ -21,7 +21,6 @@ import android.widget.FrameLayout;
 
 import com.guanghua.ln.R;
 import com.guanghua.ln.common.AppCommonInfo;
-import com.guanghua.ln.common.DownLoadImage;
 import com.guanghua.ln.fragments.CyDialogFragment;
 import com.guanghua.ln.utils.LnAIDLGetInfo;
 import com.guanghua.ln.utils.LnJSAndroidInteractive;

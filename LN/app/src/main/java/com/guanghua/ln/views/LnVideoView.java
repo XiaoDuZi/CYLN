@@ -39,10 +39,4 @@ public class LnVideoView extends VideoView {
         int height = getDefaultSize(0, heightMeasureSpec);
         setMeasuredDimension(width, height);
     }
-
-    @Override
-    public void setOnErrorListener(MediaPlayer.OnErrorListener l) {
-        super.setOnErrorListener(l);
-
-    }
 }

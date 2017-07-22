@@ -50,7 +50,7 @@ import static com.guanghua.ln.utils.LnJSAndroidInteractive.playHistoryTrackIdLis
 /**
  * 只获取视频播放ID，然后用于播放
  */
-public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
     private static final String TAG = "VodIDVideoActivity";
     //第一次提交
@@ -181,6 +181,7 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
         showControl();
 
         mVideoView.setOnCompletionListener(this);
+        mVideoView.setOnErrorListener(this);
     }
 
 //    /**
@@ -284,7 +285,7 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
         mTvTitle.setText(mTvName);
 
         mTime = System.currentTimeMillis();                                     //获取时间戳
-        mRiddle = LnMD5Utils.MD5(System.currentTimeMillis() + "besto");           //加密串加密串（时间戳+key的md5值），
+        mRiddle = LnMD5Utils.MD5(mTime+AppCommonInfo.PLAY_KEY);           //加密串加密串（时间戳+key的md5值），
 
         Retrofit retrofit = new Retrofit.Builder()                          //使用Retrofit网络框架进行访问网络
                 .baseUrl(AppCommonInfo.BASEURL)
@@ -608,4 +609,8 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
         System.gc();    //退出回收系统垃圾
     }
 
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        return true;
+    }
 }

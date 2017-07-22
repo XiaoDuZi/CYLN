@@ -3,9 +3,11 @@ package com.guanghua.ln.utils;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.guanghua.ln.R;
 import com.guanghua.ln.activitys.LnPlayVideoActivity;
 import com.guanghua.ln.activitys.MainActivity;
 import com.guanghua.ln.activitys.VodIDVideoActivity;
@@ -97,8 +100,8 @@ public class LnJSAndroidInteractive extends MainActivity
 //    String mUser32Key = UserLauncherBean.getUserLauncherBean().getUser32Key();
 
 
-    long time = System.currentTimeMillis();
-    String riddle = LnUtils.MD5(System.currentTimeMillis() + "spauth");
+//    long time = System.currentTimeMillis();
+//    String riddle = LnUtils.MD5(System.currentTimeMillis() + "spauth");
     String programid;
     WebView mWebView;
 
@@ -108,6 +111,8 @@ public class LnJSAndroidInteractive extends MainActivity
     public static int mRecordID;
     public static String mContentId;
     public static String mToActivity;
+    private int mIsFree;
+    private String mUserCode;
 
     public LnJSAndroidInteractive(Context context, FrameLayout frameLayout, LnVideoView lnVideoView,
                                   WebView webView) {
@@ -160,6 +165,8 @@ public class LnJSAndroidInteractive extends MainActivity
 
 
     private void getPlayUrl() {
+        long mTime = System.currentTimeMillis();
+        String mRiddle = LnUtils.MD5(mTime+AppCommonInfo.PLAY_KEY);
         if (mPlatform == null) {
             mPlatform = "GD";
         }
@@ -170,7 +177,7 @@ public class LnJSAndroidInteractive extends MainActivity
         LnPlayUrlService lnPlayUrlService = retrofit.create(LnPlayUrlService.class);
 
         Call<LnPlayUrlBean> call = lnPlayUrlService.getPlayUrlInfo(AppCommonInfo.Type,
-                AppCommonInfo.mTime, AppCommonInfo.mRiddle, mPlatform,
+                mTime,mRiddle, mPlatform,
                 AppCommonInfo.SpId, mPlayVodID, "", "");
         call.enqueue(new Callback<LnPlayUrlBean>() {
             @Override
@@ -280,6 +287,11 @@ public class LnJSAndroidInteractive extends MainActivity
     }
 
     @JavascriptInterface
+    public String get32Key(){
+        return UserLauncherBean.getInstance().getUser32Key();
+    }
+
+    @JavascriptInterface
     public void startPlayVideo(int playIndex, String playListJsonString) {
         mToActivity = "LnPlayVideoActivity";
 //        Log.e(TAG, "startPlayVideo: 52上学调取startPlayVideo");
@@ -379,18 +391,20 @@ public class LnJSAndroidInteractive extends MainActivity
     }
 
     private void authentication(String productID) {
+
+        long time = System.currentTimeMillis();
+        String riddle = LnUtils.MD5(time+AppCommonInfo.PRODUCT_PROGRAM_KEY);
         String temptoken = UserLauncherBean.getUserLauncherBean().getUser32Key();
-        Log.e(TAG, "authentication: "+temptoken);
-        Log.e(TAG, "authentication: ProductID"+productID);
+
 //        programid = "240001310";
-        programid = "240001308";
+//        programid = "240001308";
 //        programid = "240001312";
 //        240001311 240001312
 //        programid = "PRO0000000296";
 //        programid = "PRO0000000297";
 //        programid = productID;
 //        240001314  240001313 这两个是新建立的自动续订的产品
-//        programid="240001313";
+        programid="240001313";
 
         Log.e(TAG, "authentication: "+productID);
         Retrofit retrofit = new Retrofit.Builder()
@@ -402,7 +416,7 @@ public class LnJSAndroidInteractive extends MainActivity
 //                temptoken, programid, spid, time, riddle);
         ProductIDAuthenticationService productIDAuthenticationService=retrofit.create(ProductIDAuthenticationService.class);
         Call<AuthenticationBean> authenticationBeanCall = productIDAuthenticationService.getResult(
-                temptoken, programid,AppCommonInfo.SpId, time, riddle);
+                temptoken, programid,AppCommonInfo.SpId,time,riddle);
         authenticationBeanCall.enqueue(new Callback<AuthenticationBean>() {
             @Override
             public void onResponse(Call<AuthenticationBean> call, Response<AuthenticationBean> response) {
@@ -423,13 +437,7 @@ public class LnJSAndroidInteractive extends MainActivity
                     goToOrderActivity();
                 } else if (mResult.equals("2")) {//2.跳转播放页面
                     Log.e(TAG, "startPlayVideo: 52上学调取startPlayVideo");
-                    if (mToActivity.equals("LnPlayVideoActivity")){
-                        Intent intent = new Intent(mContext, LnPlayVideoActivity.class);
-                        mActivity.startActivity(intent);
-                    }else if (mToActivity.equals("VodIDVideoActivity")){
-                        Intent intent = new Intent(mContext, VodIDVideoActivity.class);
-                        mActivity.startActivity(intent);
-                    }
+                    jumpToPlayActivity();
                 }
             }
 
@@ -438,6 +446,16 @@ public class LnJSAndroidInteractive extends MainActivity
                 Log.e(TAG, "onFailure: " + "访问网络失败！");
             }
         });
+    }
+
+    private void jumpToPlayActivity() {
+        if (mToActivity.equals("LnPlayVideoActivity")){
+            Intent intent = new Intent(mContext, LnPlayVideoActivity.class);
+            mActivity.startActivity(intent);
+        }else if (mToActivity.equals("VodIDVideoActivity")){
+            Intent intent = new Intent(mContext, VodIDVideoActivity.class);
+            mActivity.startActivity(intent);
+        }
     }
 
     /**
@@ -490,12 +508,16 @@ public class LnJSAndroidInteractive extends MainActivity
                     for (int i = 0; i < productIDSize; i++) {
                         products.append(recordIDBean.getData().getProducts().get(i) + ",");
                     }
-                    mRecordID = recordIDBean.getRecordId();
-                    mContentId = recordIDBean.getData().getVodId();
-                    Log.e(TAG, "onResponse: "+ mRecordID +":"+ mContentId);
+                    mRecordID = recordIDBean.getRecordId();        //提供给VodIDVideoActivity使用
+                    mContentId = recordIDBean.getData().getVodId();//提供给VodIDVideoActivity使用
+                    //0:收费；1：免费
+                    mIsFree = recordIDBean.getData().getIsfree();
+                    //200：白名单以及已订购；201：未订购；需要鉴权；202：黑名单
+                    mUserCode = recordIDBean.getData().getUserCode();
                     mProductID = products.substring(0, products.length() - 1);
-                    Log.e(TAG, "onResponse:productID " + mProductID);
-                    authentication(mProductID);//鉴权
+                    Log.e(TAG, "onResponse: UserCode:"+mUserCode);
+                    userAccountState();
+
                 } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
@@ -506,6 +528,35 @@ public class LnJSAndroidInteractive extends MainActivity
                 Log.e(TAG, "onFailure: 获取RecordID请求网络失败" + t.toString());
             }
         });
+    }
+
+    /**
+     * 用户账号状态判断
+     */
+    private void userAccountState() {
+        if (mUserCode.equals("202")){  //黑名单判断
+            AlertDialog.Builder builder=new AlertDialog.Builder(mActivity);
+            builder.setMessage(R.string.blacklist_info)
+                    .setPositiveButton(R.string.positive_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alertDialog= builder.create();
+            alertDialog.show();
+            return;
+        }else if (mUserCode.equals("200")){//白名单判断
+            jumpToPlayActivity();
+        }else if (mUserCode.equals("201")){//未定购
+            if (mIsFree==0){
+                Log.e(TAG, "onResponse: 0:mIsFree"+mIsFree);
+                authentication(mProductID);//鉴权
+            }else if (mIsFree==1){
+                Log.e(TAG, "onResponse: mIsFree"+mIsFree);
+                jumpToPlayActivity();
+            }
+        }
     }
 
 //    //退出app

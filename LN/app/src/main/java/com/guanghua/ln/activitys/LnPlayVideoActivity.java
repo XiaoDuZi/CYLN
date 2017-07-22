@@ -1,10 +1,12 @@
 package com.guanghua.ln.activitys;
 
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -49,7 +51,7 @@ import static com.guanghua.ln.utils.LnJSAndroidInteractive.playTitleList;
 import static com.guanghua.ln.utils.LnJSAndroidInteractive.playTrackIdList;
 import static com.guanghua.ln.utils.LnJSAndroidInteractive.playVodIdList;
 
-public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
     private static final String TAG = "LnPlayVideoActivity";
     //第一次提交
@@ -169,6 +171,8 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         }
     });
     private long mInActivityTime;
+    private int mIsFree;
+    private String mUserCode;
 
 
     @Override
@@ -186,14 +190,15 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         showControl();
 
         mVideoView.setOnCompletionListener(this);
+        mVideoView.setOnErrorListener(this);
 
     }
 
     /**
      * 获取播放RecordID
+     * @param playUrl
      */
-    private void getRecordID() {
-        Log.e(TAG, "onResponse: " + mTrackID + ":" + mUserName);
+    private void getRecordID(final Uri playUrl) {
         Retrofit mRetrofit = new Retrofit.Builder()
                 .baseUrl(AppCommonInfo.RECORDID_BASEURL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -205,12 +210,13 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             @Override
             public void onResponse(Call<RecordIDBean> call, Response<RecordIDBean> response) {
                 Log.e(TAG, call + "onResponse: RecordID获取访问网络成功！" + response);
-
                 RecordIDBean recordIDBean = new RecordIDBean();
                 recordIDBean = response.body();
                 try{
                     mRecordID = recordIDBean.getRecordId();
-                    Log.e(TAG, "onResponse: " + recordIDBean.toString());
+                    mIsFree = recordIDBean.getData().getIsfree();
+                    mUserCode = recordIDBean.getData().getUserCode();
+                    beginPlayVideo(playUrl);
                 }catch (NullPointerException e){
                     e.printStackTrace();
                 }
@@ -297,7 +303,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 //            mVideoView.setVisibility(View.INVISIBLE);
 //        }
         mTime = System.currentTimeMillis();                                     //获取时间戳
-        mRiddle = LnMD5Utils.MD5(System.currentTimeMillis() + "besto");           //加密串加密串（时间戳+key的md5值），
+        mRiddle = LnMD5Utils.MD5(mTime +AppCommonInfo.PLAY_KEY);           //加密串加密串（时间戳+key的md5值），
 
         // key值固定写为besto
         mContentId = playVodIdList.get(playIndex1);    //获取视频ID
@@ -324,7 +330,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
                     public void run() {
                         if (mLnPlayUrlBean==null)
                             return;
-                        playVideo(mLnPlayUrlBean);       //播放视频
+                        getPlatform(mLnPlayUrlBean);       //播放视频
                     }
                 });
             }
@@ -340,12 +346,12 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     }
 
 
-    private void playVideo(LnPlayUrlBean lnPlayUrlBean) {
-        Log.e(TAG, "playVideo: ****************************************");
+    private void getPlatform(LnPlayUrlBean lnPlayUrlBean) {
+        Log.e(TAG, "getPlatform: ****************************************");
         if (lnPlayUrlBean.getPlayUrl() == null)
             return;
         try {
-            Log.e(TAG, "playVideo: " + lnPlayUrlBean.getPlayUrl());
+            Log.e(TAG, "getPlatform: " + lnPlayUrlBean.getPlayUrl());
             Uri playUrl = Uri.parse(lnPlayUrlBean.getPlayUrl());
             Log.e(TAG, "onResponse: " + playUrl.toString());
             if (playUrl.toString().equals("该内容无播放地址!")) {
@@ -366,7 +372,8 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
                 }
             } else {
                 //正式地址
-                beginPlayVideo(playUrl);
+                getRecordID(playUrl);
+//                beginPlayVideo(playUrl);
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -374,11 +381,26 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     }
 
     private void beginPlayVideo(Uri playUrl) {
-        getRecordID();                            //获取添加播放记录鉴权
-        Log.e(TAG, "playVideo: " + mPlatform);
-        //正式地址
-        mVideoView.setVideoPath(playUrl.toString());
-
+//        getRecordID(playUrl);                            //获取添加播放记录鉴权
+        Log.e(TAG, "beginPlayVideo: "+mIsFree);
+        if (mIsFree ==0&&mUserCode.equals("201")){//免费视频，和未定够状态提示订购
+            AlertDialog.Builder builder=new AlertDialog.Builder(LnPlayVideoActivity.this);
+            builder.setMessage("您尚未订购该产品，请订购后，继续收看该节目！")
+                    .setPositiveButton(R.string.positive_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alertDialog= builder.create();
+            alertDialog.show();
+            return;
+        }else if (mIsFree==1||mUserCode.equals("200")){//如果是白名单，直接播放
+            //正式地址
+            mVideoView.setVideoPath(playUrl.toString());
+        }
+        Log.e(TAG, "getPlatform: " + mPlatform);
         mVideoView.setOnPreparedListener(this);
         mVideoView.requestFocus();
 //        if (TextUtils.equals(mFileType, "1")) { //视频播放
@@ -630,4 +652,17 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         System.gc();         //退出回收系统垃圾
     }
 
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        Log.e(TAG, "onError: mp:"+mp.toString()+"what:"+what+"extra:"+extra);
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        builder.setMessage("无法播放此视频！")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                });
+        return true;
+    }
 }
