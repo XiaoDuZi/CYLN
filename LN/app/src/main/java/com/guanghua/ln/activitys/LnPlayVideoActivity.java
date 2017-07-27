@@ -3,6 +3,7 @@ package com.guanghua.ln.activitys;
 import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -45,6 +46,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.guanghua.ln.common.AppCommonInfo.BASEURL;
 import static com.guanghua.ln.utils.LnJSAndroidInteractive.fileTypeList;
+import static com.guanghua.ln.utils.LnJSAndroidInteractive.mRecordID;
 import static com.guanghua.ln.utils.LnJSAndroidInteractive.playIndex1;
 import static com.guanghua.ln.utils.LnJSAndroidInteractive.playItemList;
 import static com.guanghua.ln.utils.LnJSAndroidInteractive.playTitleList;
@@ -55,13 +57,6 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 
     private static final String TAG = "LnPlayVideoActivity";
     //第一次提交
-
-    private static final int QUICK_ADD_PROGRESS = 5;    //快进
-    private static final int QUICK_CUT_PROGRESS = 6;    //快退
-    private static final int SHOW_CONTROL = 7;          //显示操作界面
-    private static final int HIDE_CONTROL = 8;          //隐藏操作界面
-    private static final int PLAY_TIME = 9;             //播放时间
-    private static final int QUICK_INTERVAL_ITEM = 60;  //快进的时间间隔
 
 //    public static boolean sInPlayVideo=false;
 
@@ -99,6 +94,13 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     @BindView(R.id.videoView)
     LnVideoView mVideoView;
 
+    private static final int QUICK_ADD_PROGRESS = 5;    //快进
+    private static final int QUICK_CUT_PROGRESS = 6;    //快退
+    private static final int SHOW_CONTROL = 7;          //显示操作界面
+    private static final int HIDE_CONTROL = 8;          //隐藏操作界面
+    private static final int PLAY_TIME = 9;             //播放时间
+    private static final int QUICK_INTERVAL_ITEM = 60;  //快进的时间间隔
+
     private long mTime;
     private String mRiddle;
     //    private String mPlatform = "GD";
@@ -114,17 +116,10 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     private long mDuration;              //视频总时长
     private boolean startQuick = false;
     private long mSeekTime;              //快进快退时间
-//    private int playIndex = 0;           //播放索引
-
-//    private ArrayList<String> playTitleList = new ArrayList();
-//    private ArrayList<String> playVodIdList = new ArrayList();
-//    private ArrayList<String> playTrackIdList = new ArrayList();
-//    private ArrayList<String> fileTypeList = new ArrayList();
-//    private ArrayList<Integer> pointList = new ArrayList();
     private String mFileType;
     private LnPlayUrlBean mLnPlayUrlBean;
 
-    private int mRecordID; //添加播放记录
+    private int mPlayVideoRecordID = mRecordID; //添加播放记录
     private String mTvName; //视频名称
     private String mUserName; //用户名：和keyNo相同
     private String mTrackID;  //
@@ -134,15 +129,31 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         @Override
         public boolean handleMessage(Message message) {
             if (message.what == QUICK_ADD_PROGRESS) { //快进
-                uiHandler.sendEmptyMessageDelayed(QUICK_ADD_PROGRESS, QUICK_INTERVAL_ITEM);
+//                uiHandler.sendEmptyMessageDelayed(QUICK_ADD_PROGRESS, QUICK_INTERVAL_ITEM);
+                uiHandler.sendEmptyMessage(QUICK_ADD_PROGRESS);
                 setPlayInfo();
             } else if (message.what == QUICK_CUT_PROGRESS) { //快退
-                uiHandler.sendEmptyMessageDelayed(QUICK_CUT_PROGRESS, QUICK_INTERVAL_ITEM);
+//                uiHandler.sendEmptyMessageDelayed(QUICK_CUT_PROGRESS, QUICK_INTERVAL_ITEM);
+                uiHandler.sendEmptyMessage(QUICK_CUT_PROGRESS);
                 setPlayInfo();
             } else if (message.what == SHOW_CONTROL) {
                 mRlControl.setVisibility(View.VISIBLE);
             } else if (message.what == HIDE_CONTROL) {
                 mRlControl.setVisibility(View.GONE);
+            } else if (message.what == 11) {
+                uiHandler.sendEmptyMessageDelayed(11, 1000);
+                mStayTime++;
+            } else if (message.what == 12) {
+                uiHandler.sendEmptyMessageDelayed(12, 1000);
+                mZTETime++;
+                Log.e(TAG, "handleMessage:mZTETime " + LnUtils.generateTimeInt(mZTETime));
+                mTvDurLeft.setText(LnUtils.generateTimeInt(mZTETime));
+                mVideoPlayerProgress.setProgress((int) ((mZTETime * 1000) / (mDuration / 1000)));
+            } else if (message.what == 14) {
+                Log.e(TAG, "handleMessage:mSeekTime" + mSeekTime);
+                mVideoView.seekTo((int) mSeekTime);
+                mZTETime = (int) (mSeekTime / 1000);
+                setPlayInfo();
             } else if (message.what == PLAY_TIME) {
                 uiHandler.sendEmptyMessageDelayed(PLAY_TIME, 1000);
 //                vodPayingTime++;
@@ -170,10 +181,16 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             return false;
         }
     });
-    private long mInActivityTime;
+
+
     private int mIsFree;
     private String mUserCode;
 
+    private int mStayTime = 0;
+    private int mZTETime = 0;
+    private boolean mHasObtainRecordID = true;
+    private boolean mBeginPlay = true;
+    private boolean mHasObtainIsFree=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,9 +198,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         setContentView(R.layout.ln_activity_play_video_ln);
         ButterKnife.bind(this);
 
-        mInActivityTime = System.currentTimeMillis();
-        AppCommonInfo.sInPlayVideo=true;
-//        getRecordID();//
+        AppCommonInfo.sInPlayVideo = true;
         initDatas();   //获取播放信息
         getPlayUrl();
 
@@ -191,11 +206,12 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 
         mVideoView.setOnCompletionListener(this);
         mVideoView.setOnErrorListener(this);
-
     }
+
 
     /**
      * 获取播放RecordID
+     *
      * @param playUrl
      */
     private void getRecordID(final Uri playUrl) {
@@ -212,12 +228,12 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
                 Log.e(TAG, call + "onResponse: RecordID获取访问网络成功！" + response);
                 RecordIDBean recordIDBean = new RecordIDBean();
                 recordIDBean = response.body();
-                try{
-                    mRecordID = recordIDBean.getRecordId();
+                try {
+                    mPlayVideoRecordID = recordIDBean.getRecordId();
                     mIsFree = recordIDBean.getData().getIsfree();
                     mUserCode = recordIDBean.getData().getUserCode();
                     beginPlayVideo(playUrl);
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
 
@@ -225,7 +241,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 
             @Override
             public void onFailure(Call<RecordIDBean> call, Throwable t) {
-                Log.e(TAG, "onFailure: 获取RecordID请求网络失败"+t.toString());
+                Log.e(TAG, "onFailure: 获取RecordID请求网络失败" + t.toString());
             }
         });
     }
@@ -261,17 +277,19 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 //            pointList.add(playItem.getInitPoint());
 //            playTrackIdList.add(playItem.getTrackId() + "");
 //        }
-        Log.e(TAG, "initDatas: "+playIndex1+":"+playItemList.size());
+        Log.e(TAG, "initDatas: " + playIndex1 + ":" + playItemList.size());
         if (playIndex1 >= playItemList.size()) {
             playIndex1 = 0;
         }
     }
 
     private void playNext() {
-        playIndex1++;
+        Log.e(TAG, "playNext: ");
         addPlayRecord();     //添加播放记录
-
-        mInActivityTime = System.currentTimeMillis();
+        if (Build.MANUFACTURER.equals("ZTE Corporation")) {
+            mZTETime = 0;
+        }
+        playIndex1++;
         playVodByIndex();
     }
 
@@ -289,7 +307,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
      */
     private void getPlayUrl() {
 
-        Log.e(TAG, "getPlayUrl: "+playIndex1);
+        Log.e(TAG, "getPlayUrl: " + playIndex1);
 
         mTvName = playTitleList.get(playIndex1);  //获取视频名称
         mTrackID = playTrackIdList.get(playIndex1); //获取mTrackID
@@ -303,7 +321,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 //            mVideoView.setVisibility(View.INVISIBLE);
 //        }
         mTime = System.currentTimeMillis();                                     //获取时间戳
-        mRiddle = LnMD5Utils.MD5(mTime +AppCommonInfo.PLAY_KEY);           //加密串加密串（时间戳+key的md5值），
+        mRiddle = LnMD5Utils.MD5(mTime + AppCommonInfo.PLAY_KEY);           //加密串加密串（时间戳+key的md5值），
 
         // key值固定写为besto
         mContentId = playVodIdList.get(playIndex1);    //获取视频ID
@@ -313,22 +331,18 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         LnPlayUrlService lnPlayUrlService = retrofit.create(LnPlayUrlService.class);
-        Log.e(TAG, "getPlayUrl:mRiddle" + mRiddle);
-        Log.e(TAG, "getPlayUrl: " + mPlatform);
-
-        Log.e(TAG, "getPlayUrl: URL" +mRecordID);
-
         Call<LnPlayUrlBean> call = lnPlayUrlService.getPlayUrlInfo(AppCommonInfo.Type, mTime,
-                mRiddle,mPlatform, AppCommonInfo.SpId, mContentId, mBeginTime, mEndTime);
+                mRiddle, mPlatform, AppCommonInfo.SpId, mContentId, mBeginTime, mEndTime);
         call.enqueue(new Callback<LnPlayUrlBean>() {
             @Override
             public void onResponse(Call<LnPlayUrlBean> call, Response<LnPlayUrlBean> response) {
-                Log.e(TAG, "onResponse: 请求视频url网络成功"+response.toString());
+                Log.e(TAG, "onResponse: 请求视频url网络成功" + response.toString());
                 mLnPlayUrlBean = response.body();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (mLnPlayUrlBean==null)
+                        Log.e(TAG, "run：请求视频url网络"+mLnPlayUrlBean.getPlayUrl().toString());
+                        if (mLnPlayUrlBean == null)
                             return;
                         getPlatform(mLnPlayUrlBean);       //播放视频
                     }
@@ -347,13 +361,10 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 
 
     private void getPlatform(LnPlayUrlBean lnPlayUrlBean) {
-        Log.e(TAG, "getPlatform: ****************************************");
         if (lnPlayUrlBean.getPlayUrl() == null)
             return;
         try {
-            Log.e(TAG, "getPlatform: " + lnPlayUrlBean.getPlayUrl());
             Uri playUrl = Uri.parse(lnPlayUrlBean.getPlayUrl());
-            Log.e(TAG, "onResponse: " + playUrl.toString());
             if (playUrl.toString().equals("该内容无播放地址!")) {
                 switch (mPlatform) {
                     case "ZX":
@@ -372,8 +383,12 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
                 }
             } else {
                 //正式地址
-                getRecordID(playUrl);
-//                beginPlayVideo(playUrl);
+                if (mHasObtainRecordID) {  //判断是否已经获取到RecordID,如果已经获取到就不重复获取RecordID
+                    mHasObtainRecordID = false;
+                    beginPlayVideo(playUrl);
+                } else {
+                    getRecordID(playUrl);
+                }
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -381,32 +396,43 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     }
 
     private void beginPlayVideo(Uri playUrl) {
-//        getRecordID(playUrl);                            //获取添加播放记录鉴权
-        Log.e(TAG, "beginPlayVideo: "+mIsFree);
-        if (mIsFree ==0&&mUserCode.equals("201")){//免费视频，和未定够状态提示订购
-            AlertDialog.Builder builder=new AlertDialog.Builder(LnPlayVideoActivity.this);
-            builder.setMessage("您尚未订购该产品，请订购后，继续收看该节目！")
-                    .setPositiveButton(R.string.positive_button, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog alertDialog= builder.create();
-            alertDialog.show();
-            return;
-        }else if (mIsFree==1||mUserCode.equals("200")){//如果是白名单，直接播放
-            //正式地址
-            mVideoView.setVideoPath(playUrl.toString());
-        }
+
+        uiHandler.removeMessages(11);
+        mStayTime = 0;
+        uiHandler.sendEmptyMessage(11);
+
+        Log.e(TAG, "beginPlayVideo: "+mIsFree+":"+mUserCode);
+
+      if (mHasObtainIsFree){
+          mVideoView.setVideoPath(playUrl.toString());
+          mHasObtainIsFree =false;
+      }else {
+          if (mIsFree ==0&&mUserCode.equals("201")){//免费视频，和未定够状态提示订购
+              AlertDialog.Builder builder=new AlertDialog.Builder(LnPlayVideoActivity.this);
+              builder.setMessage("您尚未订购该产品，请订购后，继续收看该节目！")
+                      .setPositiveButton(R.string.positive_button, new DialogInterface.OnClickListener() {
+                          @Override
+                          public void onClick(DialogInterface dialog, int which) {
+                              finish();
+                              dialog.cancel();
+                          }
+                      });
+              AlertDialog alertDialog= builder.create();
+              alertDialog.show();
+              return;
+          }else if (mIsFree==1||mUserCode.equals("200")){//如果是白名单，直接播放
+              //正式地址
+              mVideoView.setVideoPath(playUrl.toString());
+          }
+      }
+
+        mVideoView.setVideoPath(playUrl.toString());
         Log.e(TAG, "getPlatform: " + mPlatform);
         mVideoView.setOnPreparedListener(this);
         mVideoView.requestFocus();
-//        if (TextUtils.equals(mFileType, "1")) { //视频播放
-//            mIvVideoBg.setVisibility(View.GONE);
-//        }
+
     }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -416,31 +442,38 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             setPauseOrPlay();
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {           //快进
-//            if (mRlPlayList.getVisibility() == View.VISIBLE) {
-//                mRlPlayList.setVisibility(View.GONE);
-//            }
             mRlPlayList.setVisibility(View.GONE);
             mVedioPlayerPause.setVisibility(View.GONE);
-            mSeekTime = (mCurrentTime + 3000);    //快进
-            mVideoView.seekTo((int) mSeekTime);
-            mVideoView.start();
+            if (Build.MANUFACTURER.equals("ZTE Corporation")) {
+                mSeekTime = mZTETime * 1000 + 3000;
+                uiHandler.sendEmptyMessage(14);
+            } else {
+                mSeekTime = (mCurrentTime + 3000);    //快进
+                mVideoView.seekTo((int) mSeekTime);
+                startQuickThread(QUICK_ADD_PROGRESS);
+            }
             mIvQuickIcon.setImageResource(R.mipmap.quick_forward);
             mLlPlayQuick.setVisibility(View.VISIBLE);
-            startQuickThread(QUICK_ADD_PROGRESS);
+            mVideoView.start();
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {           //快退
-//            if (mRlPlayList.getVisibility() == View.VISIBLE) {
-//                mRlPlayList.setVisibility(View.GONE);
-//            }
             mVideoView.pause();
             mRlPlayList.setVisibility(View.GONE);      //隐藏视频列表
             mVedioPlayerPause.setVisibility(View.GONE);//隐藏视频暂停图标
-            mSeekTime = (mCurrentTime - 3000);         //设置快退时间
-            mVideoView.seekTo((int) mSeekTime);
-            mVideoView.start();
             mIvQuickIcon.setImageResource(R.mipmap.quick_back); //设置快退图标
             mLlPlayQuick.setVisibility(View.VISIBLE);   //显示快进快退布局
-            startQuickThread(QUICK_CUT_PROGRESS);
+            if (Build.MANUFACTURER.equals("ZTE Corporation")) {
+                mSeekTime = mZTETime * 1000 - 3000;
+                if (mSeekTime<=0){
+                    mSeekTime=0;
+                }
+                uiHandler.sendEmptyMessage(14);
+            } else {
+                mSeekTime = (mCurrentTime - 3000);         //设置快退时间
+                mVideoView.seekTo((int) mSeekTime);
+                startQuickThread(QUICK_CUT_PROGRESS);
+            }
+            mVideoView.start();
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (mRlPlayList.getVisibility() == View.VISIBLE) {
@@ -459,15 +492,12 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             mLlPlayQuick.setVisibility(View.GONE);
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN
                 || keyCode == KeyEvent.KEYCODE_MENU) {
-            Log.e(TAG, "onKeyUp: ");
             if (mRlPlayList.getVisibility() == View.GONE) {
                 showPlayList();
-                Log.e(TAG, "onKeyUp: **********");
                 return true;
             }
             mVideoView.setFocusable(false);    //Video取消选中后，ListView播放列表才会获得焦点，
             mLvPlay.setFocusable(true);
-
         }
         return super.onKeyUp(keyCode, event);
     }
@@ -479,11 +509,29 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         mRlPlayList.setVisibility(View.VISIBLE);
         mLvPlay.setAdapter(new ArrayAdapter<String>(this, R.layout.ln_item_play_list, playTitleList));
         mLvPlay.setSelection(playIndex1);
+        mLvPlay.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (KeyEvent.ACTION_DOWN == event.getAction() && keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+                    if (mVideoView.isPlaying()) {
+                        addPlayRecord();
+                    } else {
+                        mCurrentTime = 0;
+                        addPlayRecord();
+                    }
+
+                }
+                return false;
+            }
+        });
         mLvPlay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 mStopVideoTime = System.currentTimeMillis();
                 playIndex1 = i;
+                if (Build.MANUFACTURER.equals("ZTE Corporation")) {
+                    mZTETime = 0;
+                }
                 playVodByIndex();  //播放选中的 视频
                 mRlPlayList.setVisibility(View.GONE);
             }
@@ -491,14 +539,11 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     }
 
     private void playVodByIndex() {
-
         if (playIndex1 >= playVodIdList.size()) {
             finish();
             return;
         }
         isPlaying = false;
-//        mCurrentTime = 0;
-//        mVideoPlayerProgress.setProgress(0);
         mLlLoadingLayout.setVisibility(View.VISIBLE);
         mIvVideoBg.setVisibility(View.VISIBLE);
         uiHandler.removeMessages(PLAY_TIME);
@@ -514,21 +559,22 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
      * 添加播放记录
      */
     private void addPlayRecord() {
-
-        final long stayTime = (long) Math.ceil(mStopVideoTime - mInActivityTime);   //获取页面停留时间
+        if (Build.MANUFACTURER.equals("ZTE Corporation")) {
+            mCurrentTime = mZTETime;
+        }
 
         Retrofit addPlayRecordRetrofit = new Retrofit.Builder()
                 .baseUrl(AppCommonInfo.PLAY_RECORD_BASEURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         PlayRecordService playRecordService = addPlayRecordRetrofit.create(PlayRecordService.class);
-        Call<String> playRecordCall = playRecordService.getPlayRecord(mUserName, mRecordID, mTrackID,
-                mContentId, mTvName, mCurrentTime / 1000 + "", stayTime/1000+"");
+        Call<String> playRecordCall = playRecordService.getPlayRecord(mUserName, mPlayVideoRecordID, mTrackID,
+                mContentId, mTvName, mCurrentTime / 1000 + "", mStayTime + "");
+
         playRecordCall.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 Log.e(TAG, "onResponse: 添加播放记录成功！" + mTvName + response);
-                Log.e(TAG, "onResponse: "+mCurrentTime/1000+":"+stayTime/1000);
             }
 
             @Override
@@ -559,12 +605,18 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             mVedioPlayerPause.setImageResource(R.mipmap.player_play);
             mVedioPlayerPause.setVisibility(View.VISIBLE);
             mVideoView.start();
+            if (Build.MANUFACTURER.equals("ZTE Corporation")) {
+                uiHandler.sendEmptyMessage(12);
+            }
             isPlaying = false;
             uiHandler.removeMessages(PLAY_TIME);
         } else {
             mVedioPlayerPause.setImageResource(R.mipmap.player_pause);
             mVedioPlayerPause.setVisibility(View.VISIBLE);
             mVideoView.pause();
+            if (Build.MANUFACTURER.equals("ZTE Corporation")) {
+                uiHandler.removeMessages(12);
+            }
             isPlaying = true;
             uiHandler.sendEmptyMessage(PLAY_TIME);
         }
@@ -592,8 +644,6 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         mIvVideoBg.setVisibility(View.VISIBLE);
         mTvDurLeft.setText("00:00");
         mTvDurRight.setText("00:00");
-        mStopVideoTime=System.currentTimeMillis();
-
         playNext();          //播放完成，自动播放下一个节目
     }
 
@@ -610,8 +660,15 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         if (mp.isPlaying())
             mp.reset();
         mp.start();
+        if (mBeginPlay) {
+            if (Build.MANUFACTURER.equals("ZTE Corporation")) {
+                uiHandler.sendEmptyMessage(12);
+            }
+            mBeginPlay = false;
+        }
+
         mDuration = mVideoView.getDuration();               //获取视频总时间
-        mTvDurRight.setText(LnUtils.generateTime(mDuration));
+        mTvDurRight.setText(LnUtils.generateTime(mDuration));//显示视频总时长
         mp.setOnInfoListener(new MediaPlayer.OnInfoListener() {
             @Override
             public boolean onInfo(MediaPlayer mp, int what, int extra) {
@@ -629,20 +686,23 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         mp.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             @Override
             public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                mCurrentTime = mVideoView.getCurrentPosition();                     //当前播放时间获取
-                mVideoView.getDuration();
+//                // 获得当前播放时间和当前视频的长度
+//                int currentPosition =mVideoView.getCurrentPosition();
+//                int duration = mVideoView.getDuration();
+//                int time = ((currentPosition * 100) / duration);
+//                Log.e(TAG, "onBufferingUpdate: "+time+":::"+duration+"  current"+currentPosition);
+//                Log.e(TAG, "onBufferingUpdate: "+LnUtils.generateTime(mCurrentTime));
 
-                // 获得当前播放时间和当前视频的长度
-                int currentPosition =mVideoView.getCurrentPosition();
-                int duration = mVideoView.getDuration();
-                int time = ((currentPosition * 100) / duration);
-                Log.e(TAG, "onBufferingUpdate: "+time);
-                Log.e(TAG, "onBufferingUpdate: "+LnUtils.generateTime(mCurrentTime));
-                mVideoPlayerProgress.setProgress((int) ((mCurrentTime * 1000) / mDuration)); //进度条
-                mTvDurLeft.setText(LnUtils.generateTime(mCurrentTime));
+                if (!Build.MANUFACTURER.equals("ZTE Corporation")) {
+                    mCurrentTime = mVideoView.getCurrentPosition();    //当前播放时间获取
+                    mVideoView.getDuration();
+                    mVideoPlayerProgress.setProgress((int) ((mCurrentTime * 1000) / mDuration)); //进度条
+                    mTvDurLeft.setText(LnUtils.generateTime(mCurrentTime));
+                }
             }
         });
     }
+
 
     @Override
     protected void onDestroy() {
@@ -654,8 +714,8 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        Log.e(TAG, "onError: mp:"+mp.toString()+"what:"+what+"extra:"+extra);
-        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        Log.e(TAG, "onError: mp:" + mp.toString() + "what:" + what + "extra:" + extra);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("无法播放此视频！")
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +35,11 @@ public class CySplashActivity extends AppCompatActivity {
         Fresco.initialize(this);
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
+
+        //获取硬件厂商信息
+        String brand = Build.BRAND;
+        String company=android.os.Build.MANUFACTURER;
+        Log.e(TAG, "onCreate: "+brand+company);
 
         final String mWebUrl = getIntent().getStringExtra("CYURL");
         Log.e(TAG, "onCreate: " + mWebUrl);

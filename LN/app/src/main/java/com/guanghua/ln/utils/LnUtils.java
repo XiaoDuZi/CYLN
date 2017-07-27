@@ -21,6 +21,16 @@ public class LnUtils {
         return hours > 0 ? String.format("%02d:%02d:%02d", hours, minutes, seconds) : String.format("%02d:%02d", minutes, seconds);
     }
 
+    //int时间转换为视频播放进度 01:20:30这种   毫秒单位
+    public static String generateTimeInt(int time) {
+//        int totalSeconds = (int) (time/1000);
+        int seconds = time % 60;
+        int minutes = (time / 60) % 60;
+        int hours = time / 3600;
+
+        return hours > 0 ? String.format("%02d:%02d:%02d", hours, minutes, seconds) : String.format("%02d:%02d", minutes, seconds);
+    }
+
     /**
      * MD5加密
      * @param string

@@ -103,15 +103,15 @@ public class MainActivity extends AppCompatActivity {
     private class DownloadImageTask extends AsyncTask<String, Void, List<Drawable>> {
 
         protected List<Drawable> doInBackground(String... urls) {
-            List<Drawable> drawable=new ArrayList<>();
-            for (int i=0;i<urls.length;i++){
+            List<Drawable> drawable = new ArrayList<>();
+            for (int i = 0; i < urls.length; i++) {
                 drawable.add(loadImageFromNetwork(urls[i]));
             }
             return drawable;
         }
 
         protected void onPostExecute(List<Drawable> result) {
-            for (int i=0;i<result.size();i++){
+            for (int i = 0; i < result.size(); i++) {
                 mFrameLayout.setForeground(result.get(0));
                 mWebView.setBackground(result.get(1));
             }
@@ -171,10 +171,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.e(TAG, "onActivityResult: " + requestCode + ":" + resultCode);
         switch (requestCode) {
             case 0:
-                Log.e(TAG, "onActivityResult: " + resultCode + ":");
                 if (resultCode == 1) {//返回
                     if (mToActivity.equals("LnPlayVideoActivity")) {
                         Intent intent = new Intent(MainActivity.this, LnPlayVideoActivity.class);
@@ -183,15 +181,17 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(MainActivity.this, VodIDVideoActivity.class);
                         startActivity(intent);
                     }
-
                 } else if (resultCode == 2) {
-                    if (mToActivity.equals("LnPlayVideoActivity")) {
-                        Intent intent = new Intent(MainActivity.this, LnPlayVideoActivity.class);
-                        startActivity(intent);
-                    } else if (mToActivity.equals("VodIDVideoActivity")) {
-                        Intent intent = new Intent(MainActivity.this, VodIDVideoActivity.class);
-                        startActivity(intent);
-                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage("订购失败！")
+                            .setPositiveButton(R.string.positive_button, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
                 }
 
                 break;
@@ -287,24 +287,10 @@ public class MainActivity extends AppCompatActivity {
                 showExitDialog();
                 return true;
             } else if (mWebView.canGoBack()) {
-//                mWebView.goBack();
                 mWebView.loadUrl(endUrl);
-
-//                int intIndex = currentURL.indexOf(AppCommonInfo.INDEX_HTML);//查找字符
-//                int listIndex=currentURL.indexOf(AppCommonInfo.LIST_HTML);
-//                if (listIndex==-1){
-//                    mWebView.goBack(); // goBack()表示返回WebView的上一页面
-//                }else {
-////                    mWebView.loadUrl();
-//                }
-//                if (intIndex == -1) {
-//                    mWebView.goBack(); // goBack()表示返回WebView的上一页面
-//                } else {
-//                    mWebView.loadUrl(AppCommonInfo.INDEX_URL + currentURL.substring(currentURL.length() - 1));
-//                }
                 return true;
             } else {
-                finish();
+                mWebView.loadUrl(endUrl);
                 return true;
             }
         }
@@ -363,7 +349,6 @@ public class MainActivity extends AppCompatActivity {
         cleanApplicationData(MainActivity.this, "/data/data/com.guagnhua.ln/cache",
                 "/data/data/com.guanghua.ln/files", "/data/data/com.guanghua.ln/database/");
         System.exit(0);
-
     }
 
 }

@@ -402,9 +402,10 @@ public class LnJSAndroidInteractive extends MainActivity
 //        240001311 240001312
 //        programid = "PRO0000000296";
 //        programid = "PRO0000000297";
-//        programid = productID;
+        programid = productID;
 //        240001314  240001313 这两个是新建立的自动续订的产品
-        programid="240001313";
+//        240001315  240001316 240001317 240001318 240001319 240001320
+//        programid="240001315";
 
         Log.e(TAG, "authentication: "+productID);
         Retrofit retrofit = new Retrofit.Builder()
