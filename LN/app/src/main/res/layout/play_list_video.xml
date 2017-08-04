@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="66dp"
+        android:background="@drawable/play_list_video_up"/>
+
+    <com.guanghua.ln.views.LnVideoView
+        android:id="@+id/play_list_video"
+        android:layout_width="match_parent"
+        android:layout_height="440dp"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:background="#001324"
+        android:orientation="vertical">
+
+        <SeekBar
+            android:id="@+id/sb_play_list_seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="10dp"
+            android:minHeight="10dp"
+            android:thumb="@drawable/seek_bar_shape"
+            android:progressDrawable="@drawable/seek_bar_progress"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_play_list_left_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="6dp"
+                android:textSize="24sp"
+                android:text="00:00:00"/>
+            <TextView
+                android:id="@+id/tv_play_list_right_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="6dp"
+                android:textSize="24sp"
+                android:text="00:00:00"/>
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/play_list_video_down"/>
+
+</LinearLayout>

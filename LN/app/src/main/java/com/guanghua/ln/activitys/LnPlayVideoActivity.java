@@ -56,10 +56,6 @@ import static com.guanghua.ln.utils.LnJSAndroidInteractive.playVodIdList;
 public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
     private static final String TAG = "LnPlayVideoActivity";
-    //第一次提交
-
-//    public static boolean sInPlayVideo=false;
-
 
     @BindView(R.id.iv_video_bg)
     ImageView mIvVideoBg;
@@ -103,10 +99,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 
     private long mTime;
     private String mRiddle;
-    //    private String mPlatform = "GD";
     private String mPlatform;
-    private String mSpId = "YPPL";
-    //    private String mContentId= "MOV57ce95781170aa34867effa8";
     private String mContentId;
     private String mBeginTime;
     private String mEndTime;
@@ -129,11 +122,9 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         @Override
         public boolean handleMessage(Message message) {
             if (message.what == QUICK_ADD_PROGRESS) { //快进
-//                uiHandler.sendEmptyMessageDelayed(QUICK_ADD_PROGRESS, QUICK_INTERVAL_ITEM);
                 uiHandler.sendEmptyMessage(QUICK_ADD_PROGRESS);
                 setPlayInfo();
             } else if (message.what == QUICK_CUT_PROGRESS) { //快退
-//                uiHandler.sendEmptyMessageDelayed(QUICK_CUT_PROGRESS, QUICK_INTERVAL_ITEM);
                 uiHandler.sendEmptyMessage(QUICK_CUT_PROGRESS);
                 setPlayInfo();
             } else if (message.what == SHOW_CONTROL) {
@@ -156,27 +147,6 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
                 setPlayInfo();
             } else if (message.what == PLAY_TIME) {
                 uiHandler.sendEmptyMessageDelayed(PLAY_TIME, 1000);
-//                vodPayingTime++;
-//                if (vodPayingTime * 1000 > vodDur) {
-////                    playNext();//// TODO: 17/1/18 要去掉
-//                    return false;
-//                }
-//                mTxtPlayTime.setText(StrTool.generateTime(vodPayingTime * 1000));
-//                video_player_progress.setProgress((int) (vodPayingTime * 1000 * video_player_progress.getMax() / vodDur));
-//                if (freeTime != -1 && vodPayingTime > freeTime) {//免费播放时长结束，返回webview界面提示需要订购
-//                    Gson gson = new Gson();
-//                    String cmboId = "";
-//                    if (authBean != null && authBean.getData() != null) {
-//                        cmboId = gson.toJson(authBean.getData().getCmboIds());
-//                    }
-//                    Intent intent = new Intent();
-//                    intent.putExtra("cmboIdsArrayStr", cmboId);
-//                    intent.putExtra("currentIndex", playIndex);
-//                    intent.putExtra("currentPoint", vodPayingTime);
-//                    setResult(RESULT_OK, intent);
-//                    isBuyBack = true;
-//                    finish(); // TODO: 17/1/18
-//                }
             }
             return false;
         }
@@ -190,7 +160,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     private int mZTETime = 0;
     private boolean mHasObtainRecordID = true;
     private boolean mBeginPlay = true;
-    private boolean mHasObtainIsFree=true;
+    private boolean mHasObtainIsFree = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -257,27 +227,6 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         } else {
             mUserName = UserLauncherBean.getInstance().getUserName();   //获取用户名
         }
-
-//        String playListJsonString = getIntent().getStringExtra("playListJsonString");//获取播放信息
-//        playIndex = getIntent().getIntExtra("playIndex", 0);            //获取播放位置索引
-//        List<LnBeanPlayItem> playItemList = new ArrayList<>();
-//        Gson gson = new Gson();
-//        playItemList = gson.fromJson(playListJsonString, new TypeToken<List<LnBeanPlayItem>>() {
-//        }.getType());
-//
-//        if (playItemList.isEmpty()) {
-//            return;
-//        }
-//        for (int i = 0; i < playItemList.size(); i++) {
-//            LnBeanPlayItem playItem = playItemList.get(i);
-//            Log.e(TAG, "initDatas: "+playItem+":"+playItem.getName());
-//            playTitleList.add(playItem.getName());
-//            playVodIdList.add(playItem.getVodId().trim());
-//            fileTypeList.add(playItem.getFileType());
-//            pointList.add(playItem.getInitPoint());
-//            playTrackIdList.add(playItem.getTrackId() + "");
-//        }
-        Log.e(TAG, "initDatas: " + playIndex1 + ":" + playItemList.size());
         if (playIndex1 >= playItemList.size()) {
             playIndex1 = 0;
         }
@@ -341,7 +290,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, "run：请求视频url网络"+mLnPlayUrlBean.getPlayUrl().toString());
+                        Log.e(TAG, "run：请求视频url网络" + mLnPlayUrlBean.getPlayUrl().toString());
                         if (mLnPlayUrlBean == null)
                             return;
                         getPlatform(mLnPlayUrlBean);       //播放视频
@@ -401,30 +350,30 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
         mStayTime = 0;
         uiHandler.sendEmptyMessage(11);
 
-        Log.e(TAG, "beginPlayVideo: "+mIsFree+":"+mUserCode);
+        Log.e(TAG, "beginPlayVideo: " + mIsFree + ":" + mUserCode);
 
-      if (mHasObtainIsFree){
-          mVideoView.setVideoPath(playUrl.toString());
-          mHasObtainIsFree =false;
-      }else {
-          if (mIsFree ==0&&mUserCode.equals("201")){//免费视频，和未定够状态提示订购
-              AlertDialog.Builder builder=new AlertDialog.Builder(LnPlayVideoActivity.this);
-              builder.setMessage("您尚未订购该产品，请订购后，继续收看该节目！")
-                      .setPositiveButton(R.string.positive_button, new DialogInterface.OnClickListener() {
-                          @Override
-                          public void onClick(DialogInterface dialog, int which) {
-                              finish();
-                              dialog.cancel();
-                          }
-                      });
-              AlertDialog alertDialog= builder.create();
-              alertDialog.show();
-              return;
-          }else if (mIsFree==1||mUserCode.equals("200")){//如果是白名单，直接播放
-              //正式地址
-              mVideoView.setVideoPath(playUrl.toString());
-          }
-      }
+        if (mHasObtainIsFree) {
+            mVideoView.setVideoPath(playUrl.toString());
+            mHasObtainIsFree = false;
+        } else {
+            if (mIsFree == 0 && mUserCode.equals("201")) {//免费视频，和未定够状态提示订购
+                AlertDialog.Builder builder = new AlertDialog.Builder(LnPlayVideoActivity.this);
+                builder.setMessage("您尚未订购该产品，请订购后，继续收看该节目！")
+                        .setPositiveButton(R.string.positive_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+                return;
+            } else if (mIsFree == 1 || mUserCode.equals("200")) {//如果是白名单，直接播放
+                //正式地址
+                mVideoView.setVideoPath(playUrl.toString());
+            }
+        }
 
         mVideoView.setVideoPath(playUrl.toString());
         Log.e(TAG, "getPlatform: " + mPlatform);
@@ -464,8 +413,8 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             mLlPlayQuick.setVisibility(View.VISIBLE);   //显示快进快退布局
             if (Build.MANUFACTURER.equals("ZTE Corporation")) {
                 mSeekTime = mZTETime * 1000 - 3000;
-                if (mSeekTime<=0){
-                    mSeekTime=0;
+                if (mSeekTime <= 0) {
+                    mSeekTime = 0;
                 }
                 uiHandler.sendEmptyMessage(14);
             } else {

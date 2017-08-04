@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="100dp"
+              android:gravity="center_vertical"
+              android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/iv_play_list_video_image"
+            android:layout_width="130dp"
+            android:layout_height="100dp"/>
+
+        <RadioButton
+            android:id="@+id/rb_play_list_video_pause"
+            android:layout_width="130dp"
+            android:layout_height="100dp"
+            android:button="@null"
+            android:background="@drawable/selector_play_list_pause_start"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_play_list_video_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:text="马兰谣"
+        android:textSize="24sp"/>
+</LinearLayout>

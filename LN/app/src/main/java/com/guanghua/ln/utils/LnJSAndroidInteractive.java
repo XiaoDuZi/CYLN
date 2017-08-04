@@ -21,6 +21,7 @@ import com.google.gson.reflect.TypeToken;
 import com.guanghua.ln.R;
 import com.guanghua.ln.activitys.LnPlayVideoActivity;
 import com.guanghua.ln.activitys.MainActivity;
+import com.guanghua.ln.activitys.PlayListActivity;
 import com.guanghua.ln.activitys.VodIDVideoActivity;
 import com.guanghua.ln.bean.AuthenticationBean;
 import com.guanghua.ln.bean.LnBeanPlayItem;
@@ -253,6 +254,14 @@ public class LnJSAndroidInteractive extends MainActivity
         }
     }
 
+    /**
+     * 调用视频列表页面
+     */
+    @JavascriptInterface
+    public void getPlayListActivity(String albumId){
+        Log.e(TAG, "getPlayListActivity: "+albumId);
+        PlayListActivity.actionStart(mActivity,albumId);
+    }
 
     //停止播放小窗口视频
     @JavascriptInterface
