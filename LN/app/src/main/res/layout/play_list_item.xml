@@ -3,6 +3,7 @@
               android:layout_width="match_parent"
               android:layout_height="100dp"
               android:gravity="center_vertical"
+              android:descendantFocusability="blocksDescendants"
               android:orientation="horizontal">
 
     <RelativeLayout
@@ -14,12 +15,12 @@
             android:layout_width="130dp"
             android:layout_height="100dp"/>
 
-        <RadioButton
-            android:id="@+id/rb_play_list_video_pause"
+        <ImageView
+            android:id="@+id/rt_play_list_video_pause"
             android:layout_width="130dp"
             android:layout_height="100dp"
-            android:button="@null"
-            android:background="@drawable/selector_play_list_pause_start"/>
+            android:visibility="gone"
+            android:background="@drawable/play_list_pause"/>
     </RelativeLayout>
 
     <TextView

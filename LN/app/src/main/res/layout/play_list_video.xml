@@ -5,56 +5,111 @@
               android:orientation="vertical">
 
     <ImageView
+        android:id="@+id/iv_play_list_video_up_info"
         android:layout_width="match_parent"
         android:layout_height="66dp"
         android:background="@drawable/play_list_video_up"/>
 
-    <com.guanghua.ln.views.LnVideoView
-        android:id="@+id/play_list_video"
+    <RelativeLayout
+        android:id="@+id/rl_play_video"
         android:layout_width="match_parent"
-        android:layout_height="440dp"
-        />
+        android:layout_height="440dp">
+
+        <com.guanghua.ln.views.LnVideoView
+            android:id="@+id/play_list_video"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            />
+
+        <include
+            layout="@layout/play_list_video_bottom"
+            android:visibility="gone"/>
+
+        <include
+            layout="@layout/play_list_play_seek"
+            android:visibility="gone"/>
+
+        <!--暂停-->
+        <ImageView
+            android:id="@+id/play_list_video_player_pause"
+            style="@style/focusAndSetTag"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/bg_play_quick"
+            android:focusable="false"
+            android:src="@drawable/player_play"
+            android:visibility="gone"
+            />
+
+        <LinearLayout
+            android:id="@+id/ll_play_list_play_title_list"
+            android:layout_width="350dp"
+            android:layout_height="350dp"
+            android:layout_centerInParent="true"
+            android:background="@color/transparent">
+            <!--android:layout_centerInParent="true"-->
+            <ListView
+                android:id="@+id/lv_play_list_play"
+                android:layout_width="350dp"
+                android:layout_height="350dp"
+                android:layout_gravity="left"
+                android:background="@color/fivety_black"
+                android:focusable="true"
+                android:listSelector="@color/recentplay_color"
+                android:visibility="invisible"/>
+        </LinearLayout>
+    </RelativeLayout>
+
     <LinearLayout
+        android:id="@+id/ll_play_list_seek_bar"
         android:layout_width="match_parent"
         android:layout_height="68dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         android:background="#001324"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp">
 
         <SeekBar
             android:id="@+id/sb_play_list_seek_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusable="false"
+            android:max="1000"
             android:maxHeight="10dp"
             android:minHeight="10dp"
-            android:thumb="@drawable/seek_bar_shape"
-            android:progressDrawable="@drawable/seek_bar_progress"/>
+            android:progressDrawable="@drawable/seek_bar_progress"
+            android:thumb="@drawable/seek_bar_shape"/>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <TextView
                 android:id="@+id/tv_play_list_left_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="6dp"
-                android:textSize="24sp"
-                android:text="00:00:00"/>
+                android:text="00:00:00"
+                android:textSize="24sp"/>
+
             <TextView
                 android:id="@+id/tv_play_list_right_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="6dp"
-                android:textSize="24sp"
-                android:text="00:00:00"/>
+                android:text="00:00:00"
+                android:textSize="24sp"/>
         </RelativeLayout>
 
 
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/iv_play_list_video_down_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/play_list_video_down"/>

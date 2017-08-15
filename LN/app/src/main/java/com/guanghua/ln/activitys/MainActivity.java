@@ -11,12 +11,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.guanghua.ln.R;
@@ -138,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
         mWebView.setScrollContainer(false);
 //        mWebView.loadUrl("file:///android_asset/ott_6.5/album_video_list.html");
         mWebView.loadUrl(mWebUrl);
+//        mWebView.loadUrl("http://125.62.17.137/gupiao/order/orderdetail.html");
         mWebView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {

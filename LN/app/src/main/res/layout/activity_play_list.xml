@@ -9,6 +9,7 @@
     tools:context="com.guanghua.ln.activitys.PlayListActivity">
 
     <LinearLayout
+        android:id="@+id/ll_play_list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="34dp"
@@ -23,6 +24,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_play_video_content"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginTop="72dp"

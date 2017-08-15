@@ -8,8 +8,6 @@
     tools:context="com.guanghua.ln.activitys.LnPlayVideoActivity">
 
 
-
-    <!--播放列表-->
     <com.guanghua.ln.views.LnVideoView
         android:id="@+id/videoView"
         android:layout_width="match_parent"

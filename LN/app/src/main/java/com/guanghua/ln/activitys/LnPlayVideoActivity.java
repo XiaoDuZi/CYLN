@@ -23,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.guanghua.ln.R;
 import com.guanghua.ln.bean.LnPlayUrlBean;
@@ -34,7 +35,6 @@ import com.guanghua.ln.interfaces.LnRecordIdService;
 import com.guanghua.ln.interfaces.PlayRecordService;
 import com.guanghua.ln.utils.LnMD5Utils;
 import com.guanghua.ln.utils.LnUtils;
-import com.guanghua.ln.views.LnVideoView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,6 +57,14 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
 
     private static final String TAG = "LnPlayVideoActivity";
 
+    private static final int QUICK_ADD_PROGRESS = 5;    //快进
+    private static final int QUICK_CUT_PROGRESS = 6;    //快退
+    private static final int SHOW_CONTROL = 7;          //显示操作界面
+    private static final int HIDE_CONTROL = 8;          //隐藏操作界面
+    private static final int PLAY_TIME = 9;             //播放时间
+    private static final int QUICK_INTERVAL_ITEM = 60;  //快进的时间间隔
+    @BindView(R.id.videoView)
+    VideoView mVideoView;
     @BindView(R.id.iv_video_bg)
     ImageView mIvVideoBg;
     @BindView(R.id.tv_dur_left)
@@ -81,21 +89,14 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
     ListView mLvPlay;
     @BindView(R.id.rl_play_list)
     RelativeLayout mRlPlayList;
-    @BindView(R.id.activity_RootView)
-    RelativeLayout mActivityRootView;
     @BindView(R.id.progressBar)
     ProgressBar mProgressBar;
+    @BindView(R.id.textView)
+    TextView mTextView;
     @BindView(R.id.ll_loading_layout)
     LinearLayout mLlLoadingLayout;
-    @BindView(R.id.videoView)
-    LnVideoView mVideoView;
-
-    private static final int QUICK_ADD_PROGRESS = 5;    //快进
-    private static final int QUICK_CUT_PROGRESS = 6;    //快退
-    private static final int SHOW_CONTROL = 7;          //显示操作界面
-    private static final int HIDE_CONTROL = 8;          //隐藏操作界面
-    private static final int PLAY_TIME = 9;             //播放时间
-    private static final int QUICK_INTERVAL_ITEM = 60;  //快进的时间间隔
+    @BindView(R.id.activity_RootView)
+    RelativeLayout mActivityRootView;
 
     private long mTime;
     private String mRiddle;
@@ -137,11 +138,9 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             } else if (message.what == 12) {
                 uiHandler.sendEmptyMessageDelayed(12, 1000);
                 mZTETime++;
-                Log.e(TAG, "handleMessage:mZTETime " + LnUtils.generateTimeInt(mZTETime));
                 mTvDurLeft.setText(LnUtils.generateTimeInt(mZTETime));
                 mVideoPlayerProgress.setProgress((int) ((mZTETime * 1000) / (mDuration / 1000)));
             } else if (message.what == 14) {
-                Log.e(TAG, "handleMessage:mSeekTime" + mSeekTime);
                 mVideoView.seekTo((int) mSeekTime);
                 mZTETime = (int) (mSeekTime / 1000);
                 setPlayInfo();
@@ -551,7 +550,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             return;
         }
         if (isPlaying) {
-            mVedioPlayerPause.setImageResource(R.mipmap.player_play);
+            mVedioPlayerPause.setImageResource(R.drawable.player_play);
             mVedioPlayerPause.setVisibility(View.VISIBLE);
             mVideoView.start();
             if (Build.MANUFACTURER.equals("ZTE Corporation")) {
@@ -560,7 +559,7 @@ public class LnPlayVideoActivity extends AppCompatActivity implements MediaPlaye
             isPlaying = false;
             uiHandler.removeMessages(PLAY_TIME);
         } else {
-            mVedioPlayerPause.setImageResource(R.mipmap.player_pause);
+            mVedioPlayerPause.setImageResource(R.drawable.player_pause);
             mVedioPlayerPause.setVisibility(View.VISIBLE);
             mVideoView.pause();
             if (Build.MANUFACTURER.equals("ZTE Corporation")) {

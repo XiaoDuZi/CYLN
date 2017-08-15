@@ -20,6 +20,8 @@ public class AppCommonInfo {
     public static String URL = "http://59.46.18.18";
     //阿里云
 //    public static String URL = "http://120.76.221.222";
+    //河北
+//    public static String URL="http:192.168.44.200";
 
     public static String WEBURL = URL + "/ott/";
     /**
@@ -49,8 +51,11 @@ public class AppCommonInfo {
 //    阿里云
 //    public static String PLAY_RECORD_BASEURL = URL + "/CQTVWeb_edu/tvutvgo/";
 
-    //        http://59.46.18.18:81/news/uploadFile//utvgo_track/small_img/cp00010203070002_B.jpg
-    public static String PLAY_LISI_IMAGE_URL=URL+":81/news/uploadFile/";
+    /**
+     * 播放列表图片URL
+     * 例：http://59.46.18.18:81/news/uploadFile//utvgo_track/small_img/cp00010203070002_B.jpg
+     */
+    public static String PLAY_LIST_IMAGE_URL =URL+":81/news/uploadFile/";
 
     /**
      * 获取RecordId

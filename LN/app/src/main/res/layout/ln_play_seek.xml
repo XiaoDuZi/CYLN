@@ -8,17 +8,7 @@
               android:gravity="center"
               android:visibility="gone"
               android:orientation="vertical">
-    <!--<LinearLayout-->
-        <!--android:id="@+id/ll_play_quick"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_centerInParent="true"-->
-        <!--android:background="@drawable/bg_play_quick"-->
-        <!--android:gravity="center"-->
-        <!--android:orientation="vertical"-->
 
-        >
-        <!--android:visibility="gone"-->
         <ImageView
             android:id="@+id/iv_quick_icon"
             android:layout_width="wrap_content"
@@ -35,7 +25,5 @@
             android:text="@string/quick_time"
             android:textSize="50dp"
             />
-
-    <!--</LinearLayout>-->
 
 </LinearLayout>

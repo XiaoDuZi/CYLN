@@ -10,6 +10,9 @@ android {
         //正式
         versionCode 6
         versionName "1.0.6.debug"
+        //河北
+//        versionCode 1
+//        versionName "1.0.0.debug"
         //测试版本号，版本名称
 //        versionCode 4
 //        versionName "1.0.4"
@@ -23,6 +26,9 @@ android {
                 variant.outputs.each { output ->
                     output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace("app-release.apk",
                             "gh-ln-release" + versionName + ".apk"))
+                    //河北
+//                    output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace("app-release.apk",
+//                            "cy-hb-release" + versionName + ".apk"))
                 }
             }
         }
@@ -34,6 +40,9 @@ android {
                 variant.outputs.each { output ->
                     output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace("app-debug.apk",
                             "gh-ln-test" + versionName + ".apk"))
+                    //河北
+//                    output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace("app-debug.apk",
+//                            "cy-hb-test" + versionName + ".apk"))
                 }
             }
         }

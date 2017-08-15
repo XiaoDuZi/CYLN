@@ -19,17 +19,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.guanghua.ln.R;
 import com.guanghua.ln.bean.LnPlayUrlBean;
-import com.guanghua.ln.bean.RecordIDBean;
 import com.guanghua.ln.bean.UserLauncherBean;
 import com.guanghua.ln.common.AppCommonInfo;
 import com.guanghua.ln.interfaces.LnPlayUrlService;
-import com.guanghua.ln.interfaces.LnRecordIdService;
 import com.guanghua.ln.interfaces.PlayRecordService;
-import com.guanghua.ln.interfaces.TrackIDBean;
 import com.guanghua.ln.utils.LnMD5Utils;
 import com.guanghua.ln.utils.LnUtils;
 import com.guanghua.ln.views.LnVideoView;
@@ -65,27 +60,27 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
 
     @BindView(R.id.iv_video_bg)
     ImageView mIvVideoBg;
-    @BindView(R.id.tv_dur_left)
+    @BindView(R.id.tv_play_list_dur_left)
     TextView mTvDurLeft;
-    @BindView(R.id.video_player_progress)
+    @BindView(R.id.sb_play_list_video_player_progress)
     SeekBar mVideoPlayerProgress;
-    @BindView(R.id.tv_dur_right)
+    @BindView(R.id.tv_play_list_dur_right)
     TextView mTvDurRight;
-    @BindView(R.id.tv_title)
+    @BindView(R.id.tv_play_list_title)
     TextView mTvTitle;
-    @BindView(R.id.vedio_player_pause)
+    @BindView(R.id.play_list_video_player_pause)
     ImageButton mVedioPlayerPause;
     @BindView(R.id.rl_control)
     RelativeLayout mRlControl;
-    @BindView(R.id.iv_quick_icon)
+    @BindView(R.id.iv_play_list_quick_icon)
     ImageView mIvQuickIcon;
-    @BindView(R.id.tv_quick_info)
+    @BindView(R.id.tv_play_list_quick_info)
     TextView mTvQuickInfo;
-    @BindView(R.id.ll_play_quick)
+    @BindView(R.id.ll_play_list_play_quick)
     LinearLayout mLlPlayQuick;
-    @BindView(R.id.lv_play)
+    @BindView(R.id.lv_play_list_play)
     ListView mLvPlay;
-    @BindView(R.id.rl_play_list)
+    @BindView(R.id.lv_play_list)
     RelativeLayout mRlPlayList;
     @BindView(R.id.activity_RootView)
     RelativeLayout mActivityRootView;
@@ -378,8 +373,8 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
             setPauseOrPlay();
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {           //快进
-//            if (mRlPlayList.getVisibility() == View.VISIBLE) {
-//                mRlPlayList.setVisibility(View.GONE);
+//            if (mListView.getVisibility() == View.VISIBLE) {
+//                mListView.setVisibility(View.GONE);
 //            }
             mRlPlayList.setVisibility(View.GONE);
             mVedioPlayerPause.setVisibility(View.GONE);
@@ -391,8 +386,8 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
             startQuickThread(QUICK_ADD_PROGRESS);
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {           //快退
-//            if (mRlPlayList.getVisibility() == View.VISIBLE) {
-//                mRlPlayList.setVisibility(View.GONE);
+//            if (mListView.getVisibility() == View.VISIBLE) {
+//                mListView.setVisibility(View.GONE);
 //            }
             mVideoView.pause();
             mRlPlayList.setVisibility(View.GONE);      //隐藏视频列表
@@ -439,7 +434,7 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
 //     */
 //    private void showPlayList() {
 //        Log.e(TAG, "showPlayList: ");
-//        mRlPlayList.setVisibility(View.VISIBLE);
+//        mListView.setVisibility(View.VISIBLE);
 //
 //        mLvPlay.setAdapter(new ArrayAdapter<String>(this, R.layout.ln_item_play_list, playTitleList));
 //
@@ -449,7 +444,7 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
 //                mStopVideoTime = System.currentTimeMillis();
 //                playIndex = i;
 //                playVodByIndex();  //播放选中的 视频
-//                mRlPlayList.setVisibility(View.GONE);
+//                mListView.setVisibility(View.GONE);
 //            }
 //        });
 //    }
@@ -520,13 +515,13 @@ public class VodIDVideoActivity extends AppCompatActivity implements MediaPlayer
             return;
         }
         if (isPlaying) {
-            mVedioPlayerPause.setImageResource(R.mipmap.player_play);
+            mVedioPlayerPause.setImageResource(R.drawable.player_play);
             mVedioPlayerPause.setVisibility(View.VISIBLE);
             mVideoView.start();
             isPlaying = false;
             uiHandler.removeMessages(PLAY_TIME);
         } else {
-            mVedioPlayerPause.setImageResource(R.mipmap.player_pause);
+            mVedioPlayerPause.setImageResource(R.drawable.player_pause);
             mVedioPlayerPause.setVisibility(View.VISIBLE);
             mVideoView.pause();
             isPlaying = true;

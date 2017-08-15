@@ -569,22 +569,6 @@ public class LnJSAndroidInteractive extends MainActivity
         }
     }
 
-//    //退出app
-//    @JavascriptInterface
-//    public void exitApp() {
-//        Log.e(TAG, "exitApp: ");
-//        mHiFiDialogTools.showLeftRightTip(mContext, "温馨提示", "确认退出" +
-//                        mContext.getString(R.string.app_name) + "？", "再玩一会", "退出",
-//                new MyDialogEnterListener() {
-//                    @Override
-//                    public void onClickEnter(Dialog dialog, Object object) {
-//                        if ((int) object == 1) {
-//                            mActivity.finish();
-//                        }
-//                    }
-//                });
-//    }
-
     @Override
     public void onPrepared(MediaPlayer mp) {
         if (mp.isPlaying())
